@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package lol.search;
 
 import javax.swing.JFrame;
@@ -17,7 +13,7 @@ public class GUIFrame {
     private final JFrame frame; //main frame of the application
     
     public GUIFrame(){
-        
+        System.out.println("CONSTRUCTOR - GUIFrame()");
         frame = new JFrame(applicationName);
         FrameDefaults(frame); //size, close operations, etc.
         MainPage main = new MainPage(frame); //mainpage
