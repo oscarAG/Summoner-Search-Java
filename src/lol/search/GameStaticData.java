@@ -73,18 +73,18 @@ public class GameStaticData {
         int low = 0;
         int high = champions.length - 1;
         int random = seed.nextInt(high - low) + low;
-        String champion = champions[random];
-        System.out.println("    " + champion + " chosen to be background.");
+        String randomChampion = champions[random];
+        System.out.println("    " + randomChampion + " chosen to be background.");
         
         try {
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+champion+"_0.jpg");
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+randomChampion+"_0.jpg");
             BufferedImage c = ImageIO.read(url);
             image = new ImageIcon(c);
             System.out.println("    Successful.");
         } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: Error retrieving background image. Check GameStaticData class - setBackground()");
+            System.out.println("    MalformedURLException::: Error retrieving background image. Check setBackground()");
         } catch (IOException ex) {
-            System.out.println("    IOException::: Error retrieving background image. Check GameStaticData class - setBackground()");
+            System.out.println("    IOException::: Error retrieving background image. Check setBackground()");
         }
         return image;
     }
