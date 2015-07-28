@@ -11,11 +11,16 @@ package lol.search;
  */
 public class LoLSearch {
 
-    /**
-     * @param args the command line arguments
-     */
+    private static String apiKey = "5ef85c1b-a4b7-4001-8b12-9a4fad596e08";
+    
     public static void main(String[] args) {
-        // TODO code application logic here
+        System.out.println("Application started.");
+        /*Proceed to GUIFrame class*/
+        GUIFrame objFrame = new GUIFrame();
+    }
+    
+    public String getApiKey(){
+            return apiKey;
     }
     
 }
