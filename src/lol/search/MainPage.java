@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -78,7 +79,7 @@ public class MainPage {
         this.masterPanel = new JPanel();
         this.masterPanel.setLayout(new BoxLayout(this.masterPanel, BoxLayout.Y_AXIS));
         this.masterPanel.setBackground(new Color(0,0,0,150));
-        this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,215, 0)); //border
+        this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,295, 0)); //border
             /*add components to the masterPanel*/
             addLogo(this.masterPanel);
             addSummonerLabel(this.masterPanel);
@@ -140,6 +141,8 @@ public class MainPage {
         this.summonerTextField.setHorizontalAlignment(SwingConstants.CENTER);
         this.summonerTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         this.summonerTextField.setText("Osxander");
+        this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
+        this.summonerTextField.setPreferredSize(new Dimension(222,30));
         textFieldHolder.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
         textFieldHolder.add(this.summonerTextField);
         textFieldHolder.setOpaque(false);
@@ -149,30 +152,38 @@ public class MainPage {
     /*Add button to master panel*/
     private void addSearchButton(JFrame frame, JPanel panel){
         System.out.println("METHOD - MainPage/addSearchButton");
+        ImageIcon buttonImage = new ImageIcon("assets\\button.png");
         //button
         JPanel buttonHolder = new JPanel();
-        this.searchButton = new JButton("Player History");
-        this.searchButton.setPreferredSize(new Dimension(250,50));
-        this.searchButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 30)); //custom font
+        this.searchButton = new JButton("PLAYER HISTORY");
+        this.searchButton.setPreferredSize(new Dimension(222,50));
+        this.searchButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
         this.searchButton.setForeground(Color.WHITE); //text color
         this.searchButton.setBackground(Color.DARK_GRAY);
         this.searchButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        //search button background image
+        this.searchButton.setHorizontalTextPosition(AbstractButton.CENTER);
+        Image tempImage = buttonImage.getImage();
+        Image newTempImg = tempImage.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
+        buttonImage = new ImageIcon(newTempImg);
+        this.searchButton.setIcon(buttonImage);
+        
         this.searchButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){ //button pressed
-                System.out.println("The button was pressed.");
+                System.out.println("METHOD - MainPage/addSearchButton");
+                System.out.println("    The button was pressed.");
                 String nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
-                System.out.println("nameInput text: " + nameInput);
+                System.out.println("    nameInput text: " + nameInput);
                 String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
                 ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                System.out.println("country code: " + regionCodeValue);
+                System.out.println("    country code: " + regionCodeValue);
                 //prepare frame for next page
                 frame.getContentPane().removeAll();
                 frame.revalidate();
                 frame.repaint();
-                System.out.println("Frame contents removed...");
-                System.out.println("Proceeding to GetSummonerByNameJSONResponse...\n");
+                System.out.println("    Frame contents removed...");
                 /*This is where the next page will be called. JSON information must be retrieved from another class.*/
-                
+                System.out.println("    Retrieve JSON information.");
             }
         });
         buttonHolder.add(this.searchButton);
@@ -228,6 +239,7 @@ public class MainPage {
         JPanel comboBoxPanel = new JPanel();
         this.regionsComboBox = new JComboBox(this.objGameStaticData.getRegionsArray()); //different regions in the combo box
         this.regionsComboBox.setEditable(true); //allow the user to choose
+        this.regionsComboBox.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
         comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
         comboBoxPanel.add(this.regionsComboBox);
         comboBoxPanel.setOpaque(false);

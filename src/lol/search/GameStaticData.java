@@ -7,6 +7,7 @@ package lol.search;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
@@ -76,15 +77,23 @@ public class GameStaticData {
         String randomChampion = champions[random];
         System.out.println("    " + randomChampion + " chosen to be background.");
         
+        //URL
+        int serverResponseCode = 0;
         try {
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+randomChampion+"_0.jpg");
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            //Get image
             BufferedImage c = ImageIO.read(url);
             image = new ImageIcon(c);
-            System.out.println("    Successful.");
+            System.out.println("    Successful. RC(" + serverResponseCode+")");
         } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: Error retrieving background image. Check setBackground()");
+            System.out.println("    MalformedURLException::: RC("+serverResponseCode+") Error retrieving background image. Check setBackground()");
         } catch (IOException ex) {
-            System.out.println("    IOException::: Error retrieving background image. Check setBackground()");
+            System.out.println("    IOException::: RC("+serverResponseCode+") Error retrieving background image. Check setBackground()");
         }
         return image;
     }
