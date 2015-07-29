@@ -36,6 +36,7 @@ import javax.swing.SwingConstants;
  * @author Oscar
  */
 public class MainPage {
+    private JFrame masterFrame;
     //class objects
     private GameStaticData objGameStaticData; //class object to retrieve information from GameStaticData
     private LoLSearch objLoLSearch; //class object to retrieve api key
@@ -51,17 +52,19 @@ public class MainPage {
     
     public MainPage(JFrame mainFrame){ //arg constructor
         System.out.println("CONSTRUCTOR - MainPage(arg)");
+        this.masterFrame = mainFrame;
         loadFont();
-        initializeMasterLabel(mainFrame);
-        initializeMasterPanel(mainFrame, this.masterLabel);
+        initializeMasterLabel(this.masterFrame);
+        initializeMasterPanel(this.masterFrame, this.masterLabel);
         
-        mainFrame.revalidate();
+        this.masterFrame.revalidate();
         System.out.println("END - MainPage(arg)");
     }
     
     /*Set background of the frame and prepare for the main panel*/
     private void initializeMasterLabel(JFrame frame){
         System.out.println("METHOD - MainPage/initializeMasterLabel");
+        
         //GameStaticData class object
         objGameStaticData = new GameStaticData();
         //background label
@@ -182,7 +185,14 @@ public class MainPage {
                 frame.repaint();
                 System.out.println("        Frame contents removed...");
                 /*This is where the next page will be called. JSON information must be retrieved from another class.*/
-                Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //pass information to API for processing
+                //class objects
+                Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //get Summoner_ByName information from endpoint
+                Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue); //get Game_ById information from endpoint
+                /*get LoLStaticData_ChampionById information from endpoint.*/
+                for(int i = 0; i < objGameById.getChampionIdList().size(); i++){
+                    LoLStaticData_ChampionById objChampById = new LoLStaticData_ChampionById(objGameById.getChampionIdList().get(i), regionCodeValue); 
+                }
+                
             }
         });
         buttonHolder.add(this.searchButton);

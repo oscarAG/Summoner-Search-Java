@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 /**
  * Retrieve, parse, and make usable information from the JSON response corresponding to the summoner/by-name API endpoint.
+ * This information includes the name of the player, profile icon id, summoner level, revision date
  * @author Oscar
  */
 public class Summoner_ByName {
@@ -34,9 +35,16 @@ public class Summoner_ByName {
         this.summonerName = nameString;
         this.countryCode = cc;
         
-        getJSONResponse();
+        getJSONResponse(); //grab json response from api endpoint
         System.out.println("END - Summoner_ByName(arg, arg)");
     }
+    
+    //get methods
+    public String getName(){    return this.jsonName;    }
+    public int getProfileIconId(){  return this.jsonProfileIconId;   }
+    public long getSummonerId(){ return this.jsonId;   }
+    public long getSummonerLevel(){ return this.jsonSummonerLevel;    }
+    public long getRevisionDate(){  return this.jsonRevisionDate;   }
     
     private void getJSONResponse(){
         System.out.println("METHOD - Summoner_ByName/getJSONResponse");
@@ -78,11 +86,11 @@ public class Summoner_ByName {
             this.jsonRevisionDate = summonerObject.getLong("revisionDate");
             System.out.println("    Success.");
             //print the information to confirm accuracy
-            System.out.println("    ID: " + this.jsonId + "\n" +
-                               "    Name: " + this.jsonName + "\n" +
-                               "    ProfileIconId: " + this.jsonProfileIconId + "\n" + 
-                               "    SummonerLevel: " + this.jsonSummonerLevel + "\n" +
-                               "    RevisionDate: " + this.jsonRevisionDate);
+            System.out.println("    ID: " + getSummonerId() + "\n" +
+                               "    Name: " + getName() + "\n" +
+                               "    ProfileIconId: " + getProfileIconId() + "\n" + 
+                               "    SummonerLevel: " + getSummonerLevel() + "\n" +
+                               "    RevisionDate: " + getRevisionDate());
         } catch (JSONException ex) {
             System.out.println("    JSONException::: Error retrieving JSON information. Check parseJSONResponse()");
         }
