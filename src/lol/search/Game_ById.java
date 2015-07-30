@@ -1,6 +1,8 @@
 
 package lol.search;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +12,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,15 +30,21 @@ public class Game_ById {
     private final String apiKey;
     private final long summonerId;
     private final String regionCode;
+    private String version;
     //end values
     private final ArrayList<Integer> championIdList = new ArrayList<>(); //IDs of the champions played by the searched player
     private final ArrayList<ArrayList<Integer>> itemIdMasterList = new ArrayList<>();//IDs of the items picked by the searched player for the 10 matches
     private final ArrayList<Integer> killsList = new ArrayList<>();
+    private final ArrayList<Integer> assistsList = new ArrayList<>();
+    private final ArrayList<Integer> deathsList = new ArrayList<>();
+    private ArrayList<ArrayList<ImageIcon>> itemIconMasterList = new ArrayList<>(); //item icons of the 10 matches
+    
     
     
     public Game_ById(long summId, String cc){ //arg constructor
         System.out.println("CONSTRUCTOR - Game_ById(arg, arg)");
         this.objLoLSearch = new LoLSearch();
+        this.version = this.objLoLSearch.getVersion();
         this.apiKey = objLoLSearch.getApiKey();
         this.summonerId = summId;
         this.regionCode = cc;
@@ -88,6 +98,7 @@ public class Game_ById {
             //set end values
             setChampionIdList(jsonGamesArray); //set champion id list end value
             setStatsObject(jsonGamesArray); //set stats object 
+            setItemIconMasterList(); //get item pictures
             System.out.println("    Success.");
         } catch (JSONException ex) {
             System.out.println("    JSONException::: Error parsing JSON Object. Check parseJSONResponse(arg)");
@@ -114,10 +125,13 @@ public class Game_ById {
                 statsObjects.add(array.getJSONObject(i).getJSONObject("stats"));
                 this.itemIdMasterList.add(setItemIdList(statsObjects.get(i))); //add item list for this match to the master list 
                 this.killsList.add(setKills(statsObjects.get(i))); //add kills for this match
+                this.assistsList.add(setAssists(statsObjects.get(i))); //add assists for this match
+                this.deathsList.add(setDeaths(statsObjects.get(i))); //add deaths for this match
             } catch (JSONException ex) {
                 System.out.println("    JSONException::: Error setting statsObjectList. Check setStatsObject(arg)");
             }
         }
+        printItemIdMasterList();
     }
     private ArrayList<Integer> setItemIdList(JSONObject stats){
         ArrayList<Integer> itemIdList = new ArrayList<>();
@@ -135,9 +149,62 @@ public class Game_ById {
         }
         return itemIdList;
     }
+    private void printItemIdMasterList(){
+        for(int i = 0; i < this.itemIdMasterList.size(); i++){
+            System.out.println("Items for game " + i + ":");
+            System.out.println(this.itemIdMasterList.get(i));
+        }
+    }
     public ArrayList<ArrayList<Integer>> getItemIdMasterList(){
         return this.itemIdMasterList;
     }
+    private void setItemIconMasterList(){ //get images from data dragon
+        System.out.println("METHOD - Game_ById/setItemIconMasterList()");
+        for(int i = 0; i < this.itemIdMasterList.size(); i++){
+            ArrayList<ImageIcon> tempImageList = new ArrayList<>();
+            for(int j = 0; j < this.itemIdMasterList.get(i).size(); j++){
+                tempImageList.add(getItemIconOf(this.itemIdMasterList.get(i).get(j))); //initialize temp list
+            }
+            this.itemIconMasterList.add(tempImageList); //add temp list to master list
+        }
+    }
+    private ImageIcon getItemIconOf(int id){
+        System.out.println("METHOD - Game_ById/getItemIconOf(arg)");
+        int serverResponseCode = 0; //response code of server
+        ImageIcon temp = null;
+        if(id == 0){
+            //if item slot empty
+            System.out.println("    Slot empty.");
+        }
+        else{
+            try {
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/item/" + id + ".png"); //link to the pic
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            
+            BufferedImage c = ImageIO.read(url);
+            temp = new ImageIcon(c);
+            //resize
+            Image image = temp.getImage();
+            Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+            temp = new ImageIcon(newImg);
+            System.out.println("    Successful. RC(" + serverResponseCode + ")");
+            } catch (MalformedURLException ex) {
+                System.out.println("    MalformedURLException::: Problem setting item icons. Check getItemIconOf(arg)");
+            } catch (IOException ex) {
+                System.out.println("    IOException::: Problem setting item icons. Check getItemIconOf(arg)");
+            }
+        }
+        
+        return temp;
+    }
+    public ArrayList<ArrayList<ImageIcon>> getItemIconMasterList(){
+        return this.itemIconMasterList;
+    }
+    
     private int setKills(JSONObject stats){ //grab kills from a single match
         int kills = 0;
         if(stats.has("championsKilled")){
@@ -154,5 +221,39 @@ public class Game_ById {
     }
     public ArrayList<Integer> getKillsList(){
         return this.killsList;
+    }
+    private int setAssists(JSONObject stats){ //grab assists from a single match
+        int assists = 0;
+        if(stats.has("assists")){
+            try {
+                assists = stats.getInt("assists");
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error setting assists. Check setAssists(arg)");
+            }
+        }
+        else{
+            assists = 0;
+        }
+        return assists;
+    }
+    public ArrayList<Integer> getAssistsList(){
+        return this.assistsList;
+    }
+    private int setDeaths(JSONObject stats){ //grab assists from a single match
+        int deaths = 0;
+        if(stats.has("numDeaths")){
+            try {
+                deaths = stats.getInt("numDeaths");
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error setting numDeaths. Check setDeaths(arg)");
+            }
+        }
+        else{
+            deaths = 0;
+        }
+        return deaths;
+    }
+    public ArrayList<Integer> getDeathsList(){
+        return this.deathsList;
     }
 }
