@@ -1,12 +1,19 @@
 
 package lol.search;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +27,7 @@ public class Summoner_ByName {
     private final LoLSearch objLoLSearch; //class object to retrieve api key
     private final String summonerName;
     private final String countryCode;
+    private final String version;
     
     //end values
     private String jsonName;
@@ -27,15 +35,18 @@ public class Summoner_ByName {
     private long jsonId;
     private long jsonSummonerLevel;
     private long jsonRevisionDate;
+    private ImageIcon profileIcon;
     
     public Summoner_ByName(String nameString, String cc){ //arg constructor 
         System.out.println("CONSTRUCTOR - Summoner_ByName(arg, arg)");
         
         this.objLoLSearch = new LoLSearch();
+        this.version = this.objLoLSearch.getVersion();
         this.summonerName = nameString;
         this.countryCode = cc;
         
         getJSONResponse(); //grab json response from api endpoint
+        setProfileIcon(); //using the jsonProfileIconId, get the corresponding profile icon from the data dragon url
         System.out.println("END - Summoner_ByName(arg, arg)");
     }
     
@@ -45,6 +56,7 @@ public class Summoner_ByName {
     public long getSummonerId(){ return this.jsonId;   }
     public long getSummonerLevel(){ return this.jsonSummonerLevel;    }
     public long getRevisionDate(){  return this.jsonRevisionDate;   }
+    public ImageIcon getProfileIcon(){  return this.profileIcon;    }
     
     private void getJSONResponse(){
         System.out.println("METHOD - Summoner_ByName/getJSONResponse");
@@ -95,4 +107,32 @@ public class Summoner_ByName {
             System.out.println("    JSONException::: Error retrieving JSON information. Check parseJSONResponse()");
         }
     }
+    
+    private void setProfileIcon(){
+        System.out.println("METHOD - Summoner_ByName/setProfileIcon()");
+        ImageIcon temp;
+        int serverResponseCode = 0;
+        try {
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/profileicon/" + this.jsonProfileIconId + ".png");
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            
+            BufferedImage c = ImageIO.read(url);
+            temp = new ImageIcon(c);
+            //resize
+            Image image = temp.getImage();
+            Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+            temp = new ImageIcon(newImg);
+            this.profileIcon = temp;
+            System.out.println("    Successful. RC(" + serverResponseCode + ")");
+        } catch (MalformedURLException ex) {
+            System.out.println("    MalformedURLException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check setProfileIcon()");
+        } catch (IOException ex) {
+            System.out.println("    IOException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
+        }
+    }
+    
 }

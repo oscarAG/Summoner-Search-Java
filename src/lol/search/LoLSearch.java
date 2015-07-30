@@ -7,7 +7,8 @@ package lol.search;
  */
 public class LoLSearch {
 
-    private static String apiKey = "5ef85c1b-a4b7-4001-8b12-9a4fad596e08";
+    private static final String apiKey = "5ef85c1b-a4b7-4001-8b12-9a4fad596e08";
+    private final String version = "5.14.1";
     
     public static void main(String[] args) {
         System.out.println("Application started.");
@@ -15,8 +16,7 @@ public class LoLSearch {
         GUIFrame objFrame = new GUIFrame();
     }
     
-    public String getApiKey(){
-            return apiKey;
-    }
+    public String getApiKey(){return apiKey;}
+    public String getVersion(){return version;}
     
 }

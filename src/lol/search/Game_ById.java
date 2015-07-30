@@ -25,20 +25,23 @@ public class Game_ById {
     //general variables
     private final String apiKey;
     private final long summonerId;
-    private final String countryCode;
+    private final String regionCode;
     //end values
     private final ArrayList<Integer> championIdList = new ArrayList<>(); //IDs of the champions played by the searched player
+    private final ArrayList<ArrayList<Integer>> itemIdMasterList = new ArrayList<>();//IDs of the items picked by the searched player for the 10 matches
+    private final ArrayList<Integer> killsList = new ArrayList<>();
+    
     
     public Game_ById(long summId, String cc){ //arg constructor
         System.out.println("CONSTRUCTOR - Game_ById(arg, arg)");
         this.objLoLSearch = new LoLSearch();
         this.apiKey = objLoLSearch.getApiKey();
         this.summonerId = summId;
-        this.countryCode = cc;
+        this.regionCode = cc;
         
         getJSONResponse();
         
-        System.out.println("END - Game_ById(arg, arg)");
+        System.out.println("END - Game_ById(arg, arg)\n");
     }
     
     //get methods
@@ -51,7 +54,7 @@ public class Game_ById {
         try {
             //URL
             URL url = new URL(""
-                    + "https://" + this.countryCode + ".api.pvp.net/api/lol/" + this.countryCode + "/v1.3/game/by-summoner/25148999/recent?api_key=" + apiKey);
+                    + "https://" + this.regionCode + ".api.pvp.net/api/lol/" + this.regionCode + "/v1.3/game/by-summoner/" + this.summonerId + "/recent?api_key=" + apiKey);
             //Response code
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
@@ -84,6 +87,8 @@ public class Game_ById {
             
             //set end values
             setChampionIdList(jsonGamesArray); //set champion id list end value
+            setStatsObject(jsonGamesArray); //set stats object 
+            System.out.println("    Success.");
         } catch (JSONException ex) {
             System.out.println("    JSONException::: Error parsing JSON Object. Check parseJSONResponse(arg)");
         }
@@ -99,5 +104,55 @@ public class Game_ById {
             }
             System.out.println("    Champion ID for game " + i + ": " + this.championIdList.get(i));
         }
+    }
+    private void setStatsObject(JSONArray array){ //set 10 stats objects to further grab information per match
+        System.out.println("METHOD - Game_ById/setStatsObject()");
+        ArrayList<JSONObject> statsObjects = new ArrayList<>(); //holds the 10 stats objects 
+        for(int i = 0; i < array.length(); i++){ 
+            try {
+                //initialize the list
+                statsObjects.add(array.getJSONObject(i).getJSONObject("stats"));
+                this.itemIdMasterList.add(setItemIdList(statsObjects.get(i))); //add item list for this match to the master list 
+                this.killsList.add(setKills(statsObjects.get(i))); //add kills for this match
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error setting statsObjectList. Check setStatsObject(arg)");
+            }
+        }
+    }
+    private ArrayList<Integer> setItemIdList(JSONObject stats){
+        ArrayList<Integer> itemIdList = new ArrayList<>();
+        for(int i = 0; i < 7; i++){
+            if(stats.has("item"+i)){
+                try {
+                    itemIdList.add(stats.getInt("item" + i));
+                } catch (JSONException ex) {
+                    System.out.println("    JSONException::: Error setting itemIdList. Check setItemIdList(arg)");
+                }
+            }
+            else{
+                itemIdList.add(0);
+            }
+        }
+        return itemIdList;
+    }
+    public ArrayList<ArrayList<Integer>> getItemIdMasterList(){
+        return this.itemIdMasterList;
+    }
+    private int setKills(JSONObject stats){ //grab kills from a single match
+        int kills = 0;
+        if(stats.has("championsKilled")){
+            try {
+                kills = stats.getInt("championsKilled");
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error setting kills. Check setKills(arg)");
+            }
+        }
+        else{
+            this.killsList.add(0);
+        }
+        return kills;
+    }
+    public ArrayList<Integer> getKillsList(){
+        return this.killsList;
     }
 }

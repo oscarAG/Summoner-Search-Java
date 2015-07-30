@@ -58,7 +58,7 @@ public class MainPage {
         initializeMasterPanel(this.masterFrame, this.masterLabel);
         
         this.masterFrame.revalidate();
-        System.out.println("END - MainPage(arg)");
+        System.out.println("END - MainPage(arg)\n");
     }
     
     /*Set background of the frame and prepare for the main panel*/
@@ -178,7 +178,7 @@ public class MainPage {
                 System.out.println("        nameInput text: " + nameInput);
                 String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
                 ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                System.out.println("        country code: " + regionCodeValue);
+                System.out.println("        Region code: " + regionCodeValue);
                 //prepare frame for next page
                 frame.getContentPane().removeAll();
                 frame.revalidate();
@@ -188,11 +188,8 @@ public class MainPage {
                 //class objects
                 Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //get Summoner_ByName information from endpoint
                 Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue); //get Game_ById information from endpoint
-                /*get LoLStaticData_ChampionById information from endpoint.*/
-                for(int i = 0; i < objGameById.getChampionIdList().size(); i++){
-                    LoLStaticData_ChampionById objChampById = new LoLStaticData_ChampionById(objGameById.getChampionIdList().get(i), regionCodeValue); 
-                }
-                
+                LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue); //get data for all champions from endpoint
+                MatchHistoryPage objMatchHistory = new MatchHistoryPage(masterFrame, objSummByName, objGameById, objAllChampions); //proceed to match history page
             }
         });
         buttonHolder.add(this.searchButton);

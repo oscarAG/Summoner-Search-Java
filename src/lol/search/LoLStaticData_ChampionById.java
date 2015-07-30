@@ -29,7 +29,7 @@ public class LoLStaticData_ChampionById {
         this.champId = id;
         
         getJSONResponse();
-        System.out.println("END - LoLStaticData_ChampionById(arg, arg)");
+        System.out.println("END - LoLStaticData_ChampionById(arg, arg)\n");
     }
     private void getJSONResponse(){
         System.out.println("METHOD - LoLStaticData_ChampionById/getJSONResponse");

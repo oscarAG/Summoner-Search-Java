@@ -18,7 +18,7 @@ public class GameStaticData {
     
     private final String[] champions = {   
         "Aatrox", "Ahri", "Akali", "Alistar", "Amumu", "Anivia", "Annie", "Ashe",
-        "Azir", "Bard", "Blitzcrank", "Brand", "Braum", "Caitlyn", "Cassiopia", 
+        "Azir", "Bard", "Blitzcrank", "Brand", "Braum", "Caitlyn", "Cassiopeia", 
         "Chogath", "Corki", "Darius", "Diana", "DrMundo", "Draven", "Ekko", "Elise",
         "Evelynn", "Ezreal", "Fiddlesticks", "Fiora", "Fizz", "Galio", "Gangplank", 
         "Garen", "Gnar", "Gragas", "Graves", "Hecarim", "Heimerdinger", "Irelia", 
@@ -50,7 +50,7 @@ public class GameStaticData {
     };
     
     public GameStaticData(){ //no arg constructor
-        
+        System.out.println("CONSTRUCTOR - GameStaticData()");
     }
     
     public String[] getChampionsArray(){

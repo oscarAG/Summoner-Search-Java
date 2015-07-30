@@ -9,7 +9,7 @@ import javax.swing.JFrame;
  */
 public class GUIFrame {
     
-    private final String applicationName = "LoL Search"; //title bar name of the application
+    private final String applicationName = "League of Legends Player Search"; //title bar name of the application
     private final JFrame frame; //main frame of the application
     
     public GUIFrame(){
