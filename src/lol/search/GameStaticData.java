@@ -1,6 +1,7 @@
 
 package lol.search;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -48,6 +49,7 @@ public class GameStaticData {
         "Russia",
         "Turkey"
     };
+    LoLSearch objLoLSearch = new LoLSearch();
     
     public GameStaticData(){ //no arg constructor
         System.out.println("CONSTRUCTOR - GameStaticData()");
@@ -92,5 +94,32 @@ public class GameStaticData {
             System.out.println("    IOException::: RC("+serverResponseCode+") Error retrieving background image. Check setBackground()");
         }
         return image;
+    }
+    
+    /*Return Image icon with the KDA icon*/
+    public ImageIcon getScoreboardIconOf(String iconString){
+        System.out.println("    METHOD - getScoreboardIconOf(arg)");
+        int serverResponseCode = 0;
+        String tempString = iconString;
+        ImageIcon temp = null;
+        try { //                                               Note: the version number has to be older for it to work
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+"5.2.1"+"/img/ui/"+tempString+".png"); //link to the pic
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            
+            BufferedImage c = ImageIO.read(url);
+            temp = new ImageIcon(c);
+            //resize
+            Image image = temp.getImage();
+            Image newImg = image.getScaledInstance(30,30,Image.SCALE_SMOOTH);
+            temp = new ImageIcon(newImg);
+            System.out.println(    "Successfully got scoreboard icon of " + tempString + ".");
+        } catch (IOException ex) {
+            System.out.println("    IOException check getScoreboardIconOf()");
+        }
+        return temp;
     }
 }

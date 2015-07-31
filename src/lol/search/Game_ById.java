@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -30,16 +31,21 @@ public class Game_ById {
     private final String apiKey;
     private final long summonerId;
     private final String regionCode;
-    private String version;
+    private final String version;
     //end values
     private final ArrayList<Integer> championIdList = new ArrayList<>(); //IDs of the champions played by the searched player
     private final ArrayList<ArrayList<Integer>> itemIdMasterList = new ArrayList<>();//IDs of the items picked by the searched player for the 10 matches
     private final ArrayList<Integer> killsList = new ArrayList<>();
     private final ArrayList<Integer> assistsList = new ArrayList<>();
     private final ArrayList<Integer> deathsList = new ArrayList<>();
-    private ArrayList<ArrayList<ImageIcon>> itemIconMasterList = new ArrayList<>(); //item icons of the 10 matches
-    
-    
+    private final ArrayList<ArrayList<ImageIcon>> itemIconMasterList = new ArrayList<>(); //item icons of the 10 matches
+    private final ArrayList<Boolean> outcomeList = new ArrayList<>();
+    private final ArrayList<Integer> spellOneList = new ArrayList<>();
+    private final ArrayList<Integer> spellTwoList = new ArrayList<>();
+    private final ArrayList<ImageIcon> spellOneIconList = new ArrayList<>();
+    private final ArrayList<ImageIcon> spellTwoIconList = new ArrayList<>();
+    private final ArrayList<Integer> goldEarnedList = new ArrayList<>();
+    private final ArrayList<Integer> minionsKilledList = new ArrayList<>();
     
     public Game_ById(long summId, String cc){ //arg constructor
         System.out.println("CONSTRUCTOR - Game_ById(arg, arg)");
@@ -56,6 +62,8 @@ public class Game_ById {
     
     //get methods
     public ArrayList<Integer> getChampionIdList(){  return championIdList;   }
+    public ArrayList<ImageIcon> getSpellOneIconList(){return this.spellOneIconList;}
+    public ArrayList<ImageIcon> getSpellTwoIconList(){return this.spellTwoIconList;}
     
     private void getJSONResponse(){
         System.out.println("METHOD - Game_ById/getJSONResponse");
@@ -99,11 +107,93 @@ public class Game_ById {
             setChampionIdList(jsonGamesArray); //set champion id list end value
             setStatsObject(jsonGamesArray); //set stats object 
             setItemIconMasterList(); //get item pictures
+            setSpellOneList(jsonGamesArray); //set spell one list
+            setSpellTwoList(jsonGamesArray); //set spell two list
             System.out.println("    Success.");
         } catch (JSONException ex) {
             System.out.println("    JSONException::: Error parsing JSON Object. Check parseJSONResponse(arg)");
         }
     }
+    private void setSpellOneList(JSONArray array){
+        System.out.println("METHOD - Game_ById/setSpellOneList(arg)");
+        for(int i = 0; i < array.length(); i++){
+            //get champion id from each game object
+            try {
+                this.spellOneList.add(array.getJSONObject(i).getInt("spell1"));
+                
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error retrieving spell one. Check setSpellOneList(arg)");
+            }
+            this.spellOneIconList.add(setSpellIconOf(this.spellOneList.get(i)));
+        }
+    }
+    private void setSpellTwoList(JSONArray array){
+        System.out.println("METHOD - Game_ById/setSpellTwoList(arg)");
+        for(int i = 0; i < array.length(); i++){
+            //get champion id from each game object
+            try {
+                this.spellTwoList.add(array.getJSONObject(i).getInt("spell2"));
+                this.spellTwoIconList.add(setSpellIconOf(this.spellTwoList.get(i)));
+            } catch (JSONException ex) {
+                System.out.println("    JSONException::: Error retrieving spell two. Check setSpellTwoList(arg)");
+            }
+        }
+    }
+    public ArrayList<Integer> getSpellTwoList(){
+        return this.spellTwoList;
+    }
+    private ImageIcon setSpellIconOf(int id){
+        int serverResponseCode = 0;
+        System.out.println("    Spell Key: "  + getSummonerSpellKeyOfId(id));
+        String tempSpellKey = getSummonerSpellKeyOfId(id);
+        ImageIcon temp = null;
+        try {
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/5.14.1/img/spell/" + tempSpellKey + ".png"); //link to the pic
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            
+            BufferedImage c = ImageIO.read(url);
+            temp = new ImageIcon(c);
+            //resize
+            Image image = temp.getImage();
+            Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
+            temp = new ImageIcon(newImg);
+            System.out.println(    "Successfully got Spell icon.");
+        } catch (IOException ex) {
+            System.out.println("    IOException check setSpellOneIconOf");
+        }
+        return temp;
+    }
+    private String getSummonerSpellKeyOfId(int id){
+        String jsonResponse = "";
+        String summonerSpellKey = "";
+        try {
+            URL url = new URL("https://global.api.pvp.net/api/lol/static-data/"+this.regionCode+"/v1.2/summoner-spell/" + id + "?spellData=key&api_key=" + this.apiKey);
+            //retrieve JSON
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            String strTemp = "";
+            while (null != (strTemp = br.readLine())) {
+                    jsonResponse = strTemp;
+            }
+            JSONObject jsonObject = new JSONObject(jsonResponse); //object of the JSON
+            summonerSpellKey = jsonObject.getString("key");
+        } catch (MalformedURLException ex) {
+            System.out.println("    Malformed URL check getSummonerSpellKeyOfId()");
+        } catch (IOException ex) {
+            System.out.println("    IOException check getSummonerSpellKeyOfId()");
+        } catch (JSONException ex) {
+            System.out.println("    JSONException check getSummonerSpellKeyOfId()");
+        }
+        System.out.println("    Summoner Spell Key: " + summonerSpellKey);
+        return summonerSpellKey;
+    }
+    public ArrayList<Integer> getSpellOneList(){
+        return this.spellOneList;
+    }
+    
     private void setChampionIdList(JSONArray array){
         System.out.println("METHOD - Game_ById/setChampionIdList(arg)");
         for(int i = 0; i < array.length(); i++){
@@ -127,11 +217,56 @@ public class Game_ById {
                 this.killsList.add(setKills(statsObjects.get(i))); //add kills for this match
                 this.assistsList.add(setAssists(statsObjects.get(i))); //add assists for this match
                 this.deathsList.add(setDeaths(statsObjects.get(i))); //add deaths for this match
+                this.outcomeList.add(outcomeOfGame(statsObjects.get(i))); //add outcome for this match
+                this.goldEarnedList.add(getGoldEarned(statsObjects.get(i))); //add gold earned for this match
+                this.minionsKilledList.add(getMinionsKilled(statsObjects.get(i))); //add minions killed for this match
             } catch (JSONException ex) {
                 System.out.println("    JSONException::: Error setting statsObjectList. Check setStatsObject(arg)");
             }
         }
         printItemIdMasterList();
+    }
+    private int getMinionsKilled(JSONObject stats){
+        System.out.println("METHOD - Game_ById/getMinionsKilled");
+        int minions = 0;
+        try {
+            minions = stats.getInt("minionsKilled");
+            System.out.println("Success.");
+        } catch (JSONException ex) {
+            System.out.println("    JSONException::: Error getting minions from a game.");
+        }
+        return minions;
+    }
+    public ArrayList<Integer> getMinionsKilled(){
+        return this.minionsKilledList;
+    }
+    public ArrayList<Integer> getGoldEarnedList(){
+        return this.goldEarnedList;
+    }
+    private int getGoldEarned(JSONObject stats){
+        System.out.println("METHOD - Game_ById/getGoldEarned");
+        int goldEarned = 0;
+        try {
+            goldEarned = stats.getInt("goldEarned");
+            System.out.println("Success.");
+        } catch (JSONException ex) {
+            System.out.println("    JSONException::: Error getting gold from a game.");
+        }
+        return goldEarned;
+    }
+    private boolean outcomeOfGame(JSONObject stats){
+        System.out.println("METHOD - Game_ById/setWinOrLossList(arg)");
+        boolean outcome = false;
+        try {
+            outcome = stats.getBoolean("win");
+            System.out.println("    Success.");
+        } catch (JSONException ex) {
+            System.out.println("    JSONException::: Error setting outcome. Check outcomeOfGame(arg)");
+        }
+        return outcome;
+    }
+    public ArrayList<Boolean> getOutcomeList(){
+        return this.outcomeList;
     }
     private ArrayList<Integer> setItemIdList(JSONObject stats){
         ArrayList<Integer> itemIdList = new ArrayList<>();
@@ -174,7 +309,12 @@ public class Game_ById {
         ImageIcon temp = null;
         if(id == 0){
             //if item slot empty
-            System.out.println("    Slot empty.");
+            System.out.println("    Empty slot.");
+            ImageIcon emptySlot = new ImageIcon("assets\\emptyItemSlot.png");
+            Image image = emptySlot.getImage();
+            Image newImg = image.getScaledInstance(46, 46, Image.SCALE_SMOOTH);
+            emptySlot = new ImageIcon(newImg);
+            temp = emptySlot;
         }
         else{
             try {
@@ -214,9 +354,6 @@ public class Game_ById {
                 System.out.println("    JSONException::: Error setting kills. Check setKills(arg)");
             }
         }
-        else{
-            this.killsList.add(0);
-        }
         return kills;
     }
     public ArrayList<Integer> getKillsList(){
@@ -231,9 +368,6 @@ public class Game_ById {
                 System.out.println("    JSONException::: Error setting assists. Check setAssists(arg)");
             }
         }
-        else{
-            assists = 0;
-        }
         return assists;
     }
     public ArrayList<Integer> getAssistsList(){
@@ -247,9 +381,6 @@ public class Game_ById {
             } catch (JSONException ex) {
                 System.out.println("    JSONException::: Error setting numDeaths. Check setDeaths(arg)");
             }
-        }
-        else{
-            deaths = 0;
         }
         return deaths;
     }
