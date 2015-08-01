@@ -189,7 +189,7 @@ public class MainPage {
                 Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //get Summoner_ByName information from endpoint
                 Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue); //get Game_ById information from endpoint
                 LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue); //get data for all champions from endpoint
-                MatchHistoryPage objMatchHistory = new MatchHistoryPage(masterFrame, objSummByName, objGameById, objAllChampions); //proceed to match history page
+                MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions); //proceed to match history page
             }
         });
         buttonHolder.add(this.searchButton);

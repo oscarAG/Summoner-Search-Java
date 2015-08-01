@@ -25,6 +25,7 @@ public class MatchHistoryPage {
     private final Dimension bodyDimension = new Dimension(1200, 620);
     private final Dimension matchDimension = new Dimension(1190, 56);
     private final Dimension outcomeColorDimension = new Dimension(10,45);
+    private String version;
     //values taken from other classes
     private final JFrame masterFrame;
     private final String summonerName;
@@ -42,11 +43,13 @@ public class MatchHistoryPage {
     private final ArrayList<Integer> goldList;
     private final ArrayList<Integer> minionsKilledList;
     
-    public MatchHistoryPage(JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC){
+    //public MatchHistoryPage(){} //empty constructor
+    public MatchHistoryPage(String regionCode,JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC){
         System.out.println("CONSTRUCTOR - MatchHistoryPage(arg, arg, arg, arg)");
         this.objGameStaticData = new GameStaticData(); //used to set background
         this.masterFrame = frame;
-        
+        //this.version = objGameStaticData.getMostRecentVersion(regionCode);
+        System.out.println("VERSION: " + this.version);
         //values carried over
         this.summonerName = objSBN.getName();
         this.summonerLevel = objSBN.getSummonerLevel();
@@ -121,6 +124,7 @@ public class MatchHistoryPage {
                 
                 return headerPanel;
     }
+    
     private JPanel bodyPanel(){
         ArrayList<JPanel> panelArrList = new ArrayList<>();
         //body, which holds the 10 recent matches
@@ -128,6 +132,9 @@ public class MatchHistoryPage {
         bodyPanel.setPreferredSize(bodyDimension); //dimension of the body panel
         //bodyPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         bodyPanel.setOpaque(false);
+        ImageIcon scoreIcon = this.objGameStaticData.getScoreboardIconOf("score");
+        ImageIcon goldIcon = this.objGameStaticData.getScoreboardIconOf("gold");
+        ImageIcon minionIcon = this.objGameStaticData.getScoreboardIconOf("minion");
         for(int i = 0; i < this.championIcons.size(); i ++){ //loop for the 10 maches
             JPanel matchPanel = new JPanel();
             matchPanel.setLayout(new FlowLayout()); //layout of each ind match
@@ -195,7 +202,7 @@ public class MatchHistoryPage {
             //scoreIconPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
             scoreIconPanel.setLayout(new BoxLayout(scoreIconPanel, BoxLayout.X_AXIS));
             scoreIconPanel.setOpaque(false);
-            JLabel scoreLabel = new JLabel(this.objGameStaticData.getScoreboardIconOf("score"));
+            JLabel scoreLabel = new JLabel(scoreIcon);
             scoreIconPanel.add(scoreLabel);
             JLabel KDALabel = new JLabel(this.killsList.get(i) + "/" + this.deathsList.get(i) + "/" + this.assistsList.get(i));
             KDALabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
@@ -212,7 +219,7 @@ public class MatchHistoryPage {
             //goldPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
             goldPanel.setLayout(new BoxLayout(goldPanel, BoxLayout.X_AXIS));
             goldPanel.setOpaque(false);
-            JLabel bagLabel = new JLabel(this.objGameStaticData.getScoreboardIconOf("items"));
+            JLabel bagLabel = new JLabel(goldIcon);
             goldPanel.add(bagLabel);
             int tempGoldValue = this.goldList.get(i) / 1000;
             JLabel goldLabel = new JLabel(tempGoldValue + "k");
@@ -221,7 +228,7 @@ public class MatchHistoryPage {
             goldPanel.add(goldLabel);
             goldMasterPanel.add(goldPanel);
             
-            //minons icon
+            //minions icon
             JPanel minionMasterPanel = new JPanel();
             minionMasterPanel.setOpaque(false);
             minionMasterPanel.setLayout(new BoxLayout(minionMasterPanel, BoxLayout.X_AXIS));
@@ -230,7 +237,7 @@ public class MatchHistoryPage {
             //minionPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
             minionPanel.setLayout(new BoxLayout(minionPanel, BoxLayout.X_AXIS));
             minionPanel.setOpaque(false);
-            JLabel minionLabel = new JLabel(this.objGameStaticData.getScoreboardIconOf("minion"));
+            JLabel minionLabel = new JLabel(minionIcon);
             minionPanel.add(minionLabel);
             int minionsKilledTemp = this.minionsKilledList.get(i);
             JLabel minionValueLabel = new JLabel(minionsKilledTemp + "");

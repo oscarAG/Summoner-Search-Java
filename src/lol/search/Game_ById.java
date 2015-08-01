@@ -4,6 +4,7 @@ package lol.search;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -147,7 +148,25 @@ public class Game_ById {
         System.out.println("    Spell Key: "  + getSummonerSpellKeyOfId(id));
         String tempSpellKey = getSummonerSpellKeyOfId(id);
         ImageIcon temp = null;
-        try {
+        File f = new File("assets\\spellIcons\\" + tempSpellKey + ".png");
+        if(f.isFile()){ //check if picture exists
+            System.out.println("    " + tempSpellKey + " file exists.");
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\spellIcons\\" + tempSpellKey + ".png"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+                System.out.println("    Success.");
+            } catch (MalformedURLException ex) {
+                System.out.println("    Could not get picture from file. Check setSpellIconOf");
+            } catch (IOException ex) {
+                System.out.println("    Could not get picture from file. Check setSpellIconOf");
+            }
+        }
+        else{
+            try {
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/5.14.1/img/spell/" + tempSpellKey + ".png"); //link to the pic
             //Response code
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -162,9 +181,11 @@ public class Game_ById {
             Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
             temp = new ImageIcon(newImg);
             System.out.println(    "Successfully got Spell icon.");
-        } catch (IOException ex) {
-            System.out.println("    IOException check setSpellOneIconOf");
+            } catch (IOException ex) {
+                System.out.println("    IOException check setSpellOneIconOf");
+            }
         }
+        
         return temp;
     }
     private String getSummonerSpellKeyOfId(int id){

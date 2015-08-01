@@ -3,13 +3,20 @@ package lol.search;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -21,7 +28,7 @@ public class GameStaticData {
         "Aatrox", "Ahri", "Akali", "Alistar", "Amumu", "Anivia", "Annie", "Ashe",
         "Azir", "Bard", "Blitzcrank", "Brand", "Braum", "Caitlyn", "Cassiopeia", 
         "Chogath", "Corki", "Darius", "Diana", "DrMundo", "Draven", "Ekko", "Elise",
-        "Evelynn", "Ezreal", "Fiddlesticks", "Fiora", "Fizz", "Galio", "Gangplank", 
+        "Evelynn", "Ezreal", "FiddleSticks", "Fiora", "Fizz", "Galio", "Gangplank", 
         "Garen", "Gnar", "Gragas", "Graves", "Hecarim", "Heimerdinger", "Irelia", 
         "Janna", "JarvanIV", "Jax", "Jayce", "Jinx", "Kalista", "Karma", "Karthus",
         "Kassadin", "Katarina", "Kayle", "Kennen", "Khazix", "KogMaw", "Leblanc",
@@ -121,5 +128,36 @@ public class GameStaticData {
             System.out.println("    IOException check getScoreboardIconOf()");
         }
         return temp;
+    }
+    
+    //DOES NOT WORK
+    public void getMostRecentVersion(String regionCode){
+        System.out.println("    METHOD - getMostRecentVersion()");
+        String jsonResponse = null;
+        int serverResponseCode = 0;
+        try {
+            URL url = new URL("https://global.api.pvp.net/api/lol/static-data/"+regionCode+"/v1.2/versions?api_key=" + this.objLoLSearch.getApiKey());
+            //Response code
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            serverResponseCode = connection.getResponseCode();
+            //retrieve JSON
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            String strTemp = "";
+            while (null != (strTemp = br.readLine())) {
+                    jsonResponse = strTemp;
+            }
+            System.out.println(jsonResponse);
+            JSONArray array = new JSONArray(jsonResponse);
+            System.out.println(array);
+            System.out.println("    Successful. RC(" + serverResponseCode +")");
+        } catch (MalformedURLException ex) {
+            System.out.println("    Malformed URL Exception. Issue getting most recent version.");
+        } catch (IOException ex) {
+            System.out.println("    IOException. Issue getting most recent version.");
+        } catch (JSONException ex) {
+            System.out.println("    JSONException. Issue getting most recent version.");
+        }
     }
 }

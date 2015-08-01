@@ -39,7 +39,7 @@ public class Summoner_ByName {
     
     public Summoner_ByName(String nameString, String cc){ //arg constructor 
         System.out.println("CONSTRUCTOR - Summoner_ByName(arg, arg)");
-        
+        //MatchHistoryPage objHistoryPage = new MatchHistoryPage();
         this.objLoLSearch = new LoLSearch();
         this.version = this.objLoLSearch.getVersion();
         this.summonerName = nameString;

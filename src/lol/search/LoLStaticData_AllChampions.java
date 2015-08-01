@@ -4,6 +4,7 @@ package lol.search;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -135,26 +136,46 @@ public class LoLStaticData_AllChampions {
         System.out.println("METHOD - LoLStaticData_AllChampions/getChampionIconOf(arg)");
         int serverResponseCode = 0; //response code of server
         ImageIcon temp = null;
-        try {
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/champion/"+champKey+".png"); //link to the pic
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
-            
-            BufferedImage c = ImageIO.read(url);
-            temp = new ImageIcon(c);
-            //resize
-            Image image = temp.getImage();
-            Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
-            temp = new ImageIcon(newImg);
-            System.out.println("    Successful. RC(" + serverResponseCode + ")");
-        } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: Problem setting champion icons. Check getChampionIconOf(arg)");
-        } catch (IOException ex) {
-            System.out.println("    IOException::: Problem setting champion icons. Check getChampionIconOf(arg)");
+        File f = new File("assets\\championIcons\\" + champKey + ".png");
+        if(f.isFile()){ //check if picture exists
+            System.out.println("    " + champKey + " file exists.");
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\championIcons\\" + champKey + ".png"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+                System.out.println("    Success.");
+            } catch (MalformedURLException ex) {
+                System.out.println("    Could not get picture from file. Check getChampionIconOf");
+            } catch (IOException ex) {
+                System.out.println("    Could not get picture from file. Check getChampionIconOf");
+            }
         }
+        else{
+            try {
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/champion/"+champKey+".png"); //link to the pic
+                //Response code
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                serverResponseCode = connection.getResponseCode();
+
+                BufferedImage c = ImageIO.read(url);
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+                System.out.println("    Successful. RC(" + serverResponseCode + ")");
+            } catch (MalformedURLException ex) {
+                System.out.println("    MalformedURLException::: Problem setting champion icons. Check getChampionIconOf(arg)");
+            } catch (IOException ex) {
+                System.out.println("    IOException::: Problem setting champion icons. Check getChampionIconOf(arg)");
+            }
+        }
+        
         return temp;
     }
 }
