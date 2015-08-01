@@ -13,7 +13,6 @@ public class GUIFrame {
     private final JFrame frame; //main frame of the application
     
     public GUIFrame(){
-        System.out.println("CONSTRUCTOR - GUIFrame()");
         frame = new JFrame(applicationName);
         FrameDefaults(frame); //size, close operations, etc.
         MainPage main = new MainPage(frame); //mainpage

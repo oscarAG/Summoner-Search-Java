@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -51,19 +50,16 @@ public class MainPage {
     private String regionCodeValue; //region code of region selected
     
     public MainPage(JFrame mainFrame){ //arg constructor
-        System.out.println("CONSTRUCTOR - MainPage(arg)");
         this.masterFrame = mainFrame;
         loadFont();
         initializeMasterLabel(this.masterFrame);
         initializeMasterPanel(this.masterFrame, this.masterLabel);
         
         this.masterFrame.revalidate();
-        System.out.println("END - MainPage(arg)\n");
     }
     
     /*Set background of the frame and prepare for the main panel*/
     private void initializeMasterLabel(JFrame frame){
-        System.out.println("METHOD - MainPage/initializeMasterLabel");
         
         //GameStaticData class object
         objGameStaticData = new GameStaticData();
@@ -76,7 +72,6 @@ public class MainPage {
     /***Master panel methods*************************************************************************************************/
     /*Set the master panel that will hold all swing components in the frame for the main page*/
     private void initializeMasterPanel(JFrame frame, JLabel label){
-        System.out.println("METHOD - MainPage/initializeMasterPanel");
         
         this.masterPanel = new JPanel();
         this.masterPanel.setLayout(new BoxLayout(this.masterPanel, BoxLayout.Y_AXIS));
@@ -94,7 +89,6 @@ public class MainPage {
     
     /*Add logo to the master panel*/
     private void addLogo(JPanel panel){
-        System.out.println("    addLogo()");
         try {
             URL url = new URL("https://p2.zdassets.com/hc/theme_assets/43400/200033224/league-logo.png");
             BufferedImage c2 = ImageIO.read(url);
@@ -107,18 +101,16 @@ public class MainPage {
             logo.setHorizontalAlignment(SwingConstants.CENTER);
             logo.setBorder(BorderFactory.createEmptyBorder(0,0, 0, 0)); //border
             logoHolder.setOpaque(false);
-            System.out.println("        Successful.");
             panel.add(logoHolder);
         } catch (MalformedURLException ex) {
-            System.out.println("        MalformedURLException ::: Check addLogo()");
+            Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("        IOException ::: Check addLogo()");
+            Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     /*Add summoner label to the master panel*/
     private void addSummonerLabel(JPanel panel){
-        System.out.println("    addSummonerLabel()");
         //summmoner label
         JLabel label1 = new JLabel("SUMMONER:");
         label1.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 30)); //custom font
@@ -135,7 +127,6 @@ public class MainPage {
     
     /*Add input textfield to the master panel*/
     private void addSummonerTextField(JPanel panel){
-        System.out.println("    addSummonerTextField()");
         //textfield
         JPanel textFieldHolder = new JPanel();
         this.summonerTextField.setForeground(Color.BLACK);
@@ -153,8 +144,7 @@ public class MainPage {
     
     /*Add button to master panel*/
     private void addSearchButton(JFrame frame, JPanel panel){
-        System.out.println("    addSearchButton()");
-        ImageIcon buttonImage = new ImageIcon("assets\\button.png");
+        ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
         //button
         JPanel buttonHolder = new JPanel();
         this.searchButton = new JButton("PLAYER HISTORY");
@@ -172,18 +162,14 @@ public class MainPage {
         
         this.searchButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){ //button pressed
-                System.out.println("    addSearchButton/actionPerformed()");
-                System.out.println("        The button was pressed.");
                 nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
-                System.out.println("        nameInput text: " + nameInput);
                 String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
                 ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                System.out.println("        Region code: " + regionCodeValue);
+                System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue);
                 //prepare frame for next page
                 frame.getContentPane().removeAll();
                 frame.revalidate();
                 frame.repaint();
-                System.out.println("        Frame contents removed...");
                 /*This is where the next page will be called. JSON information must be retrieved from another class.*/
                 //class objects
                 Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //get Summoner_ByName information from endpoint
@@ -240,7 +226,6 @@ public class MainPage {
     }
     /*Add combobox to the master panel for the different regions*/
     private void addRegionsComboBox(JPanel panel){
-        System.out.println("    addRegionsComboBox()");
         //combobox
         JPanel comboBoxPanel = new JPanel();
         this.regionsComboBox = new JComboBox(this.objGameStaticData.getRegionsArray()); //different regions in the combo box
@@ -254,20 +239,16 @@ public class MainPage {
     
     /*Load font for use with labels*/
     private void loadFont(){
-        System.out.println("METHOD - MainPage/loadFont");
         //load font
         try {
             //create the font to use
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             //register the font
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("fonts\\Sen-Regular.ttf")));
-            System.out.println("    Successful.");
-        } catch (IOException e) {
-            System.out.println("    IOException ::: Check loadFont()");
-        }
-        catch(FontFormatException e)
-        {
-            System.out.println("    FontFormatException ::: Check loadFont()");
+        }catch (IOException ex) {
+            Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FontFormatException ex) {
+            Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

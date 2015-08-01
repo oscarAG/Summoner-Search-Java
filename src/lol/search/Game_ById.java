@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -47,9 +46,9 @@ public class Game_ById {
     private final ArrayList<ImageIcon> spellTwoIconList = new ArrayList<>();
     private final ArrayList<Integer> goldEarnedList = new ArrayList<>();
     private final ArrayList<Integer> minionsKilledList = new ArrayList<>();
+    private final ArrayList<Long> dateCreatedMilli = new ArrayList<>();
     
     public Game_ById(long summId, String cc){ //arg constructor
-        System.out.println("CONSTRUCTOR - Game_ById(arg, arg)");
         this.objLoLSearch = new LoLSearch();
         this.version = this.objLoLSearch.getVersion();
         this.apiKey = objLoLSearch.getApiKey();
@@ -58,7 +57,6 @@ public class Game_ById {
         
         getJSONResponse();
         
-        System.out.println("END - Game_ById(arg, arg)\n");
     }
     
     //get methods
@@ -67,36 +65,25 @@ public class Game_ById {
     public ArrayList<ImageIcon> getSpellTwoIconList(){return this.spellTwoIconList;}
     
     private void getJSONResponse(){
-        System.out.println("METHOD - Game_ById/getJSONResponse");
         String jsonResponse = null; //unparsed json response
-        int serverResponseCode = 0; //response code of server
         try {
             //URL
             URL url = new URL(""
                     + "https://" + this.regionCode + ".api.pvp.net/api/lol/" + this.regionCode + "/v1.3/game/by-summoner/" + this.summonerId + "/recent?api_key=" + apiKey);
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
             //retrieve JSON
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String strTemp = "";
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            System.out.println("    Successful. RC(" + serverResponseCode +")");
-            
             parseJSONResponse(jsonResponse); //parse the json response into usable values
-            
         } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("    IOException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     private void parseJSONResponse(String jsonString){
-        System.out.println("METHOD - Game_ById/parseJSONResponse");
         JSONObject jsonObj = null;
         /*This array holds all 10 matches with their info.*/
         JSONArray jsonGamesArray = null;
@@ -110,33 +97,30 @@ public class Game_ById {
             setItemIconMasterList(); //get item pictures
             setSpellOneList(jsonGamesArray); //set spell one list
             setSpellTwoList(jsonGamesArray); //set spell two list
-            System.out.println("    Success.");
         } catch (JSONException ex) {
-            System.out.println("    JSONException::: Error parsing JSON Object. Check parseJSONResponse(arg)");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     private void setSpellOneList(JSONArray array){
-        System.out.println("METHOD - Game_ById/setSpellOneList(arg)");
         for(int i = 0; i < array.length(); i++){
             //get champion id from each game object
             try {
                 this.spellOneList.add(array.getJSONObject(i).getInt("spell1"));
                 
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error retrieving spell one. Check setSpellOneList(arg)");
-            }
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            } 
             this.spellOneIconList.add(setSpellIconOf(this.spellOneList.get(i)));
         }
     }
     private void setSpellTwoList(JSONArray array){
-        System.out.println("METHOD - Game_ById/setSpellTwoList(arg)");
         for(int i = 0; i < array.length(); i++){
             //get champion id from each game object
             try {
                 this.spellTwoList.add(array.getJSONObject(i).getInt("spell2"));
                 this.spellTwoIconList.add(setSpellIconOf(this.spellTwoList.get(i)));
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error retrieving spell two. Check setSpellTwoList(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -144,13 +128,10 @@ public class Game_ById {
         return this.spellTwoList;
     }
     private ImageIcon setSpellIconOf(int id){
-        int serverResponseCode = 0;
-        System.out.println("    Spell Key: "  + getSummonerSpellKeyOfId(id));
         String tempSpellKey = getSummonerSpellKeyOfId(id);
         ImageIcon temp = null;
         File f = new File("assets\\spellIcons\\" + tempSpellKey + ".png");
         if(f.isFile()){ //check if picture exists
-            System.out.println("    " + tempSpellKey + " file exists.");
             try {
                 BufferedImage c = ImageIO.read(new File("assets\\spellIcons\\" + tempSpellKey + ".png"));
                 temp = new ImageIcon(c);
@@ -158,32 +139,24 @@ public class Game_ById {
                 Image image = temp.getImage();
                 Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
                 temp = new ImageIcon(newImg);
-                System.out.println("    Success.");
-            } catch (MalformedURLException ex) {
-                System.out.println("    Could not get picture from file. Check setSpellIconOf");
             } catch (IOException ex) {
-                System.out.println("    Could not get picture from file. Check setSpellIconOf");
-            }
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
         else{
             try {
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/5.14.1/img/spell/" + tempSpellKey + ".png"); //link to the pic
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
-            
-            BufferedImage c = ImageIO.read(url);
-            temp = new ImageIcon(c);
-            //resize
-            Image image = temp.getImage();
-            Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
-            temp = new ImageIcon(newImg);
-            System.out.println(    "Successfully got Spell icon.");
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/5.14.1/img/spell/" + tempSpellKey + ".png"); //link to the pic
+                BufferedImage c = ImageIO.read(url);
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(23,23,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                System.out.println("    IOException check setSpellOneIconOf");
-            }
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
         
         return temp;
@@ -202,13 +175,12 @@ public class Game_ById {
             JSONObject jsonObject = new JSONObject(jsonResponse); //object of the JSON
             summonerSpellKey = jsonObject.getString("key");
         } catch (MalformedURLException ex) {
-            System.out.println("    Malformed URL check getSummonerSpellKeyOfId()");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("    IOException check getSummonerSpellKeyOfId()");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            System.out.println("    JSONException check getSummonerSpellKeyOfId()");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("    Summoner Spell Key: " + summonerSpellKey);
         return summonerSpellKey;
     }
     public ArrayList<Integer> getSpellOneList(){
@@ -216,19 +188,16 @@ public class Game_ById {
     }
     
     private void setChampionIdList(JSONArray array){
-        System.out.println("METHOD - Game_ById/setChampionIdList(arg)");
         for(int i = 0; i < array.length(); i++){
             //get champion id from each game object
             try {
                 this.championIdList.add(array.getJSONObject(i).getInt("championId"));
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error retrieving championIdList. Check setChampionIdList(arg)");
-            }
-            System.out.println("    Champion ID for game " + i + ": " + this.championIdList.get(i));
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
     }
     private void setStatsObject(JSONArray array){ //set 10 stats objects to further grab information per match
-        System.out.println("METHOD - Game_ById/setStatsObject()");
         ArrayList<JSONObject> statsObjects = new ArrayList<>(); //holds the 10 stats objects 
         for(int i = 0; i < array.length(); i++){ 
             try {
@@ -242,19 +211,17 @@ public class Game_ById {
                 this.goldEarnedList.add(getGoldEarned(statsObjects.get(i))); //add gold earned for this match
                 this.minionsKilledList.add(getMinionsKilled(statsObjects.get(i))); //add minions killed for this match
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error setting statsObjectList. Check setStatsObject(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        printItemIdMasterList();
+        //printItemIdMasterList();
     }
     private int getMinionsKilled(JSONObject stats){
-        System.out.println("METHOD - Game_ById/getMinionsKilled");
         int minions = 0;
         try {
             minions = stats.getInt("minionsKilled");
-            System.out.println("Success.");
         } catch (JSONException ex) {
-            System.out.println("    JSONException::: Error getting minions from a game.");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
         return minions;
     }
@@ -265,24 +232,20 @@ public class Game_ById {
         return this.goldEarnedList;
     }
     private int getGoldEarned(JSONObject stats){
-        System.out.println("METHOD - Game_ById/getGoldEarned");
         int goldEarned = 0;
         try {
             goldEarned = stats.getInt("goldEarned");
-            System.out.println("Success.");
         } catch (JSONException ex) {
-            System.out.println("    JSONException::: Error getting gold from a game.");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
         return goldEarned;
     }
     private boolean outcomeOfGame(JSONObject stats){
-        System.out.println("METHOD - Game_ById/setWinOrLossList(arg)");
         boolean outcome = false;
         try {
             outcome = stats.getBoolean("win");
-            System.out.println("    Success.");
         } catch (JSONException ex) {
-            System.out.println("    JSONException::: Error setting outcome. Check outcomeOfGame(arg)");
+            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
         return outcome;
     }
@@ -296,8 +259,8 @@ public class Game_ById {
                 try {
                     itemIdList.add(stats.getInt("item" + i));
                 } catch (JSONException ex) {
-                    System.out.println("    JSONException::: Error setting itemIdList. Check setItemIdList(arg)");
-                }
+                    Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+                } 
             }
             else{
                 itemIdList.add(0);
@@ -315,7 +278,6 @@ public class Game_ById {
         return this.itemIdMasterList;
     }
     private void setItemIconMasterList(){ //get images from data dragon
-        System.out.println("METHOD - Game_ById/setItemIconMasterList()");
         for(int i = 0; i < this.itemIdMasterList.size(); i++){
             ArrayList<ImageIcon> tempImageList = new ArrayList<>();
             for(int j = 0; j < this.itemIdMasterList.get(i).size(); j++){
@@ -325,38 +287,35 @@ public class Game_ById {
         }
     }
     private ImageIcon getItemIconOf(int id){
-        System.out.println("METHOD - Game_ById/getItemIconOf(arg)");
-        int serverResponseCode = 0; //response code of server
         ImageIcon temp = null;
-        if(id == 0){
-            //if item slot empty
-            System.out.println("    Empty slot.");
-            ImageIcon emptySlot = new ImageIcon("assets\\emptyItemSlot.png");
-            Image image = emptySlot.getImage();
-            Image newImg = image.getScaledInstance(46, 46, Image.SCALE_SMOOTH);
-            emptySlot = new ImageIcon(newImg);
-            temp = emptySlot;
+        File f = new File("assets\\itemIcons\\" + id + ".png");
+        if(f.isFile()){ //check if picture exists
+            //System.out.println("Item " + id + " exists in assets folder.");
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\itemIcons\\" + id + ".png"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
         else{
             try {
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/item/" + id + ".png"); //link to the pic
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
-            
-            BufferedImage c = ImageIO.read(url);
-            temp = new ImageIcon(c);
-            //resize
-            Image image = temp.getImage();
-            Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
-            temp = new ImageIcon(newImg);
-            System.out.println("    Successful. RC(" + serverResponseCode + ")");
-            } catch (MalformedURLException ex) {
-                System.out.println("    MalformedURLException::: Problem setting item icons. Check getItemIconOf(arg)");
+                //System.out.println("Must grab item " + id + " from internet.");
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/item/" + id + ".png"); //link to the pic
+                BufferedImage c = ImageIO.read(url);
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (ProtocolException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                System.out.println("    IOException::: Problem setting item icons. Check getItemIconOf(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
@@ -372,7 +331,7 @@ public class Game_ById {
             try {
                 kills = stats.getInt("championsKilled");
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error setting kills. Check setKills(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return kills;
@@ -386,7 +345,7 @@ public class Game_ById {
             try {
                 assists = stats.getInt("assists");
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error setting assists. Check setAssists(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return assists;
@@ -400,7 +359,7 @@ public class Game_ById {
             try {
                 deaths = stats.getInt("numDeaths");
             } catch (JSONException ex) {
-                System.out.println("    JSONException::: Error setting numDeaths. Check setDeaths(arg)");
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return deaths;

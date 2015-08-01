@@ -45,11 +45,8 @@ public class MatchHistoryPage {
     
     //public MatchHistoryPage(){} //empty constructor
     public MatchHistoryPage(String regionCode,JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC){
-        System.out.println("CONSTRUCTOR - MatchHistoryPage(arg, arg, arg, arg)");
         this.objGameStaticData = new GameStaticData(); //used to set background
         this.masterFrame = frame;
-        //this.version = objGameStaticData.getMostRecentVersion(regionCode);
-        System.out.println("VERSION: " + this.version);
         //values carried over
         this.summonerName = objSBN.getName();
         this.summonerLevel = objSBN.getSummonerLevel();
@@ -65,7 +62,7 @@ public class MatchHistoryPage {
         this.spellTwoIconList = objGBI.getSpellTwoIconList();
         this.goldList = objGBI.getGoldEarnedList();
         this.minionsKilledList = objGBI.getMinionsKilled();
-        printCarriedValues(); //check to confirm necessary values have been carried over successfully
+        //printCarriedValues(); //check to confirm necessary values have been carried over successfully
         
         /*Set background*/
         JLabel backgroundLabel = new JLabel(objGameStaticData.getBackgroundImageIcon());
@@ -74,9 +71,6 @@ public class MatchHistoryPage {
         
         this.masterFrame.add(backgroundLabel);
         this.masterFrame.revalidate();
-        
-        
-        System.out.println("END - MatchHistoryPage(arg, arg, arg, arg)\n");
     }
     private JPanel mainPanel(){
         JPanel mainPanel = new JPanel();
@@ -272,43 +266,38 @@ public class MatchHistoryPage {
         return bodyPanel;
     }
     private void printCarriedValues(){
-        System.out.println("METHOD - MatchHistoryPage/printCarriedValues()\n    Carried over values:");
-        System.out.println("        Name: " + this.summonerName);
-        System.out.println("        Level: " + this.summonerLevel);
+        System.out.println("Name: " + this.summonerName+
+                            "\nLevel: " + this.summonerLevel+
+                            "\nKills List: " + this.killsList+
+                            "\nDeaths List: " + this.deathsList+
+                            "\nAssists List: " + this.assistsList+
+                            "\nOutcome List: " + this.outcomeList+
+                            "\nMinions List: " + this.minionsKilledList+
+                            "\nGold List: " + this.goldList);
         if(!this.championIcons.isEmpty()){
-            System.out.println("        championIcons has been initialized.");
+            System.out.println("championIcons has been initialized.");
         }
         else{
-            System.out.println("        championIcons has NOT been initialized.");
-        }
-        if(!this.itemIdMasterList.isEmpty()){
-            System.out.println("        itemIdMasterList has been initialized.");
-        }
-        else{
-            System.out.println("        itemIdMasterList has NOT been initialized.");
+            System.out.println("championIcons has NOT been initialized.");
         }
         if(!this.itemIconMasterList.isEmpty()){
-            System.out.println("        itemIconMasterList has been initialized.");
+            System.out.println("itemIconMasterList has been initialized.");
         }
         else{
-            System.out.println("        itemIconMasterList has NOT been initialized.");
+            System.out.println("itemIconMasterList has NOT been initialized.");
         }
         if(!this.spellOneIconList.isEmpty()){
-            System.out.println("        spellOneIconList has been initialized.");
+            System.out.println("spellOneIconList has been initialized.");
         }
         else{
-            System.out.println("        spellOneIconList has NOT been initialized.");
+            System.out.println("spellOneIconList has NOT been initialized.");
         }
         if(!this.spellTwoIconList.isEmpty()){
-            System.out.println("        spellTwoIconList has been initialized.");
+            System.out.println("spellTwoIconList has been initialized.");
         }
         else{
-            System.out.println("        spellTwoIconList has NOT been initialized.");
+            System.out.println("spellTwoIconList has NOT been initialized.");
         }
-        System.out.println("        Kills List: " + this.killsList);
-        System.out.println("        Deaths List: " + this.deathsList);
-        System.out.println("        Assists List: " + this.assistsList);
-        System.out.println("        Outcome List: " + this.outcomeList);
     }
     
 }

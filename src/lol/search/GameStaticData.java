@@ -4,10 +4,11 @@ package lol.search;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Random;
 import java.util.logging.Level;
@@ -16,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
@@ -59,7 +59,6 @@ public class GameStaticData {
     LoLSearch objLoLSearch = new LoLSearch();
     
     public GameStaticData(){ //no arg constructor
-        System.out.println("CONSTRUCTOR - GameStaticData()");
     }
     
     public String[] getChampionsArray(){
@@ -72,7 +71,6 @@ public class GameStaticData {
     
     /*Return ImageIcon with random champion artwork*/
     public ImageIcon getBackgroundImageIcon(){
-        System.out.println("METHOD - GameStaticData/getBackgroundImageIcon");
         ImageIcon image = null;
         //Get a random number to select a champion from the champion array
         Random seed = new Random();
@@ -80,68 +78,65 @@ public class GameStaticData {
         int high = champions.length - 1;
         int random = seed.nextInt(high - low) + low;
         String randomChampion = champions[random];
-        System.out.println("    " + randomChampion + " chosen to be background.");
+        System.out.println(randomChampion + " chosen to be background.");
         
         //URL
-        int serverResponseCode = 0;
         try {
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+randomChampion+"_0.jpg");
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
             //Get image
             BufferedImage c = ImageIO.read(url);
             image = new ImageIcon(c);
-            System.out.println("    Successful. RC(" + serverResponseCode+")");
         } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: RC("+serverResponseCode+") Error retrieving background image. Check setBackground()");
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ProtocolException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("    IOException::: RC("+serverResponseCode+") Error retrieving background image. Check setBackground()");
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         }
         return image;
     }
     
     /*Return Image icon with the KDA icon*/
     public ImageIcon getScoreboardIconOf(String iconString){
-        System.out.println("    METHOD - getScoreboardIconOf(arg)");
-        int serverResponseCode = 0;
         String tempString = iconString;
         ImageIcon temp = null;
-        try { //                                               Note: the version number has to be older for it to work
+        File f = new File("assets\\scoreboardIcons\\" + iconString + ".png");
+        if(f.isFile()){ //check if picture exists
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\scoreboardIcons\\" + iconString + ".png"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(20,20,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else{
+            try { //                                               Note: the version number has to be older for it to work
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+"5.2.1"+"/img/ui/"+tempString+".png"); //link to the pic
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
-            
             BufferedImage c = ImageIO.read(url);
             temp = new ImageIcon(c);
             //resize
             Image image = temp.getImage();
             Image newImg = image.getScaledInstance(30,30,Image.SCALE_SMOOTH);
             temp = new ImageIcon(newImg);
-            System.out.println(    "Successfully got scoreboard icon of " + tempString + ".");
-        } catch (IOException ex) {
-            System.out.println("    IOException check getScoreboardIconOf()");
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
         return temp;
     }
     
     //DOES NOT WORK
     public void getMostRecentVersion(String regionCode){
-        System.out.println("    METHOD - getMostRecentVersion()");
         String jsonResponse = null;
-        int serverResponseCode = 0;
         try {
             URL url = new URL("https://global.api.pvp.net/api/lol/static-data/"+regionCode+"/v1.2/versions?api_key=" + this.objLoLSearch.getApiKey());
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
             //retrieve JSON
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String strTemp = "";
@@ -151,13 +146,14 @@ public class GameStaticData {
             System.out.println(jsonResponse);
             JSONArray array = new JSONArray(jsonResponse);
             System.out.println(array);
-            System.out.println("    Successful. RC(" + serverResponseCode +")");
-        } catch (MalformedURLException ex) {
-            System.out.println("    Malformed URL Exception. Issue getting most recent version.");
-        } catch (IOException ex) {
-            System.out.println("    IOException. Issue getting most recent version.");
         } catch (JSONException ex) {
-            System.out.println("    JSONException. Issue getting most recent version.");
-        }
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ProtocolException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
 }

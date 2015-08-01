@@ -6,8 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -38,7 +36,6 @@ public class Summoner_ByName {
     private ImageIcon profileIcon;
     
     public Summoner_ByName(String nameString, String cc){ //arg constructor 
-        System.out.println("CONSTRUCTOR - Summoner_ByName(arg, arg)");
         //MatchHistoryPage objHistoryPage = new MatchHistoryPage();
         this.objLoLSearch = new LoLSearch();
         this.version = this.objLoLSearch.getVersion();
@@ -47,7 +44,6 @@ public class Summoner_ByName {
         
         getJSONResponse(); //grab json response from api endpoint
         setProfileIcon(); //using the jsonProfileIconId, get the corresponding profile icon from the data dragon url
-        System.out.println("END - Summoner_ByName(arg, arg)");
     }
     
     //get methods
@@ -59,35 +55,26 @@ public class Summoner_ByName {
     public ImageIcon getProfileIcon(){  return this.profileIcon;    }
     
     private void getJSONResponse(){
-        System.out.println("METHOD - Summoner_ByName/getJSONResponse");
         String jsonResponse = null; //unparsed json response
-        int serverResponseCode = 0; //response code of server
         try {
             //URL
             URL url = new URL("https://" + this.countryCode + ".api.pvp.net/api/lol/" + this.countryCode + "/v1.4/summoner/by-name/" + this.summonerName + "?api_key=" + objLoLSearch.getApiKey());
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
             //retrieve JSON
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String strTemp = "";
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            System.out.println("    Successful. RC(" + serverResponseCode +")");
             
             parseJSONResponse(jsonResponse); //parse the json response into usable values
             
-        } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
+        } catch (ProtocolException ex) {
+            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("    IOException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
-        }
+            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
     private void parseJSONResponse(String jsonResponse){
-        System.out.println("METHOD - Summoner_ByName/parseJSONResponse");
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse); //object of the JSON
             JSONObject summonerObject = jsonObject.getJSONObject(this.summonerName);
@@ -96,29 +83,15 @@ public class Summoner_ByName {
             this.jsonProfileIconId = summonerObject.getInt("profileIconId");
             this.jsonSummonerLevel = summonerObject.getLong("summonerLevel");
             this.jsonRevisionDate = summonerObject.getLong("revisionDate");
-            System.out.println("    Success.");
-            //print the information to confirm accuracy
-            System.out.println("    ID: " + getSummonerId() + "\n" +
-                               "    Name: " + getName() + "\n" +
-                               "    ProfileIconId: " + getProfileIconId() + "\n" + 
-                               "    SummonerLevel: " + getSummonerLevel() + "\n" +
-                               "    RevisionDate: " + getRevisionDate());
         } catch (JSONException ex) {
-            System.out.println("    JSONException::: Error retrieving JSON information. Check parseJSONResponse()");
-        }
+            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
     
     private void setProfileIcon(){
-        System.out.println("METHOD - Summoner_ByName/setProfileIcon()");
         ImageIcon temp;
-        int serverResponseCode = 0;
         try {
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/profileicon/" + this.jsonProfileIconId + ".png");
-            //Response code
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            serverResponseCode = connection.getResponseCode();
             
             BufferedImage c = ImageIO.read(url);
             temp = new ImageIcon(c);
@@ -127,11 +100,10 @@ public class Summoner_ByName {
             Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
             temp = new ImageIcon(newImg);
             this.profileIcon = temp;
-            System.out.println("    Successful. RC(" + serverResponseCode + ")");
-        } catch (MalformedURLException ex) {
-            System.out.println("    MalformedURLException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check setProfileIcon()");
+        } catch (ProtocolException ex) {
+            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("    IOException::: RC(" + serverResponseCode + ") Error retrieving JSON Response. Check getJSONResponse()");
+            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
