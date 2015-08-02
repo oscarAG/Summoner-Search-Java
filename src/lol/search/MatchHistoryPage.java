@@ -1,15 +1,21 @@
 
 package lol.search;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -84,13 +90,42 @@ public class MatchHistoryPage {
     private JPanel headerPanel(){
         //header -- to set this semi-transparent i had to remove setOpaque and replace with setBackground(...)
             JPanel headerPanel = new JPanel();
-            headerPanel.setLayout(new FlowLayout());
+            headerPanel.setLayout(new BorderLayout());
             //headerPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
             headerPanel.setBackground(new Color(0,0,0,170));
             headerPanel.setPreferredSize(headerDimension);
+                //back button
+                JPanel buttonHolder = new JPanel();
+                ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
+                Image tempImage = buttonImage.getImage();
+                Image newTempImg = tempImage.getScaledInstance(110, 50, Image.SCALE_SMOOTH);
+                buttonImage = new ImageIcon(newTempImg);
+                JButton backButton = new JButton("BACK");
+                backButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
+                backButton.setForeground(Color.WHITE); //text color
+                backButton.setBackground(new Color(0,0,0,0));
+                backButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                backButton.setHorizontalTextPosition(AbstractButton.CENTER);
+                backButton.setPreferredSize(new Dimension(110,50));
+                backButton.setIcon(buttonImage);
+                backButton.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){ //button pressed
+                        masterFrame.getContentPane().removeAll();
+                        masterFrame.revalidate();
+                        masterFrame.repaint();
+                        MainPage MAIN_PAGE = new MainPage(masterFrame);
+                    }
+                });
+                buttonHolder.add(backButton);
+                buttonHolder.setOpaque(false);
+                headerPanel.add(buttonHolder, BorderLayout.LINE_START);
+                //centerpanel
+                JPanel centerPanel = new JPanel();
+                centerPanel.setLayout(new FlowLayout());
+                centerPanel.setOpaque(false);
                 //profile icon
                 JLabel profileIconLabel = new JLabel(this.profileIcon);
-                headerPanel.add(profileIconLabel);
+                centerPanel.add(profileIconLabel);
                 //summoner name
                 JLabel summonerNameLabel = new JLabel(this.summonerName);
                 summonerNameLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 20)); //custom font
@@ -98,14 +133,14 @@ public class MatchHistoryPage {
                 JPanel namePanel = new JPanel();
                 namePanel.setOpaque(false);
                 namePanel.add(summonerNameLabel);
-                headerPanel.add(namePanel);
+                centerPanel.add(namePanel);
                 //empty panel
                 JPanel emptyPanel = new JPanel();
-                JLabel emptyLabel = new JLabel("----");
+                JLabel emptyLabel = new JLabel("---");
                 emptyPanel.add(emptyLabel);
                 emptyLabel.setForeground(new Color(0,0,0,0));
                 emptyPanel.setOpaque(false);
-                headerPanel.add(emptyPanel);
+                centerPanel.add(emptyPanel);
                 //summoner level
                 String level = String.valueOf(this.summonerLevel);
                 JLabel summonerLevelLabel = new JLabel(level);
@@ -114,8 +149,14 @@ public class MatchHistoryPage {
                 JPanel levelPanel = new JPanel();
                 levelPanel.setOpaque(false);
                 levelPanel.add(summonerLevelLabel);
-                headerPanel.add(levelPanel);
+                centerPanel.add(levelPanel);
                 
+                headerPanel.add(centerPanel, BorderLayout.CENTER);
+                //empty panel to balance right side
+                JPanel ee = new JPanel();
+                ee.setOpaque(false);
+                ee.setPreferredSize(new Dimension(110,50));
+                headerPanel.add(ee, BorderLayout.LINE_END);
                 return headerPanel;
     }
     

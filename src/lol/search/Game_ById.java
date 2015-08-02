@@ -296,7 +296,7 @@ public class Game_ById {
                 temp = new ImageIcon(c);
                 //resize
                 Image image = temp.getImage();
-                Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                Image newImg = image.getScaledInstance(43,43,Image.SCALE_SMOOTH);
                 temp = new ImageIcon(newImg);
             } catch (IOException ex) {
                 Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
@@ -315,6 +315,7 @@ public class Game_ById {
             } catch (ProtocolException ex) {
                 Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
+                System.out.println(id);
                 Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
