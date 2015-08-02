@@ -35,9 +35,9 @@ public class LoLStaticData_AllChampions {
     private ArrayList<String> championKeys = new ArrayList<>();
     private ArrayList<ImageIcon> championIcons = new ArrayList<>();
     
-    public LoLStaticData_AllChampions(ArrayList<Integer> champArr, String cc){
+    public LoLStaticData_AllChampions(ArrayList<Integer> champArr, String cc, String recentVersion){
         this.objLoLSearch = new LoLSearch();
-        this.version = objLoLSearch.getVersion();
+        this.version = recentVersion;
         this.championIdList = champArr;
         this.regionCode = cc;
         
@@ -141,6 +141,8 @@ public class LoLStaticData_AllChampions {
                 Image image = temp.getImage();
                 Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
                 temp = new ImageIcon(newImg);
+                ImageIO.write(c, "png",new File("assets\\championIcons\\" + champKey + ".png")); //save to directory if it doesnt exist
+                System.out.println(champKey + " saved to directory.");
             } catch (MalformedURLException ex) {
                 Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

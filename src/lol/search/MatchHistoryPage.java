@@ -3,6 +3,7 @@ package lol.search;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,6 +12,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -48,6 +50,10 @@ public class MatchHistoryPage {
     private final ArrayList<ImageIcon> spellTwoIconList;
     private final ArrayList<Integer> goldList;
     private final ArrayList<Integer> minionsKilledList;
+    private final ArrayList<Long> dateCreatedEpochList;
+    private final ArrayList<String> subTypeList;
+    private final ArrayList<String> gameModeList;
+    private final ArrayList<String> dateStringList = new ArrayList<>();
     
     //public MatchHistoryPage(){} //empty constructor
     public MatchHistoryPage(String regionCode,JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC){
@@ -68,6 +74,11 @@ public class MatchHistoryPage {
         this.spellTwoIconList = objGBI.getSpellTwoIconList();
         this.goldList = objGBI.getGoldEarnedList();
         this.minionsKilledList = objGBI.getMinionsKilled();
+        this.dateCreatedEpochList = objGBI.getDateCreatedLongList();
+        this.subTypeList = objGBI.getSubTypeList();
+        this.gameModeList = objGBI.getGameModeList();
+        setConvertedDateList(this.dateCreatedEpochList);
+        
         //printCarriedValues(); //check to confirm necessary values have been carried over successfully
         
         /*Set background*/
@@ -77,6 +88,16 @@ public class MatchHistoryPage {
         
         this.masterFrame.add(backgroundLabel);
         this.masterFrame.revalidate();
+    }
+    private void setConvertedDateList(ArrayList<Long> epDate){ //change epoch long date into formatted string
+        Date realDate;
+        for(int i = 0; i < epDate.size(); i++){
+            realDate = new Date(epDate.get(i));
+            String realDateString = realDate.toString();
+            String[] parts = realDateString.split(" ");
+            String newDate = parts[1] + " " + parts[2] + ", " + parts[5];
+            this.dateStringList.add(newDate);
+        }
     }
     private JPanel mainPanel(){
         JPanel mainPanel = new JPanel();
@@ -175,6 +196,27 @@ public class MatchHistoryPage {
             matchPanel.setLayout(new FlowLayout()); //layout of each ind match
             matchPanel.setBackground(new Color(0,0,0,170));
             matchPanel.setPreferredSize(matchDimension);
+            //mode, sub type
+            JPanel modeSubPanel = new JPanel();
+            modeSubPanel.setPreferredSize(new Dimension(170,40));
+            //modeSubPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+            modeSubPanel.setOpaque(false);
+            modeSubPanel.setLayout(new BoxLayout(modeSubPanel, BoxLayout.Y_AXIS));
+            JLabel modeLabel = new JLabel(this.gameModeList.get(i));
+            modeLabel.setForeground(Color.WHITE);
+            modeLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
+            JLabel subTypeLabel = new JLabel(this.subTypeList.get(i));
+            subTypeLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
+            subTypeLabel.setForeground(Color.WHITE);
+            modeSubPanel.add(modeLabel);
+            modeLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            modeSubPanel.add(subTypeLabel);
+            subTypeLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            matchPanel.add(modeSubPanel);
+            //spacer panel
+            JLabel spacer = new JLabel("--");
+            spacer.setForeground(new Color(0,0,0,0));
+            matchPanel.add(spacer);
             //outcome color 
             JPanel outcomeColorPanel = new JPanel();
             JLabel outcomeColorLabel = new JLabel("--");
@@ -232,9 +274,10 @@ public class MatchHistoryPage {
             JPanel scoreMasterPanel = new JPanel();
             scoreMasterPanel.setOpaque(false);
             scoreMasterPanel.setLayout(new BoxLayout(scoreMasterPanel, BoxLayout.X_AXIS));
-            scoreMasterPanel.setPreferredSize(new Dimension(110,40));
+            scoreMasterPanel.setPreferredSize(new Dimension(90,40));
             JPanel scoreIconPanel = new JPanel(); //holds the crossed swords icon
             //scoreIconPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+            //scoreMasterPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
             scoreIconPanel.setLayout(new BoxLayout(scoreIconPanel, BoxLayout.X_AXIS));
             scoreIconPanel.setOpaque(false);
             JLabel scoreLabel = new JLabel(scoreIcon);
@@ -281,7 +324,8 @@ public class MatchHistoryPage {
             minionPanel.add(minionValueLabel);
             minionMasterPanel.add(minionPanel);
             
-            JLabel dateLabel = new JLabel("dateLabel");
+            JLabel dateLabel = new JLabel(this.dateStringList.get(i));
+            dateLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
             dateLabel.setForeground(Color.WHITE);
 
             matchPanel.add(outcomeColorPanel);
@@ -296,7 +340,7 @@ public class MatchHistoryPage {
             matchPanel.add(spacer3);
             matchPanel.add(minionMasterPanel);
             matchPanel.add(spacer4);
-            //matchPanel.add(dateLabel);
+            matchPanel.add(dateLabel);
             
             panelArrList.add(matchPanel);
         }
@@ -314,7 +358,10 @@ public class MatchHistoryPage {
                             "\nAssists List: " + this.assistsList+
                             "\nOutcome List: " + this.outcomeList+
                             "\nMinions List: " + this.minionsKilledList+
-                            "\nGold List: " + this.goldList);
+                            "\nGold List: " + this.goldList+
+                            "\nSub Type List: " + this.subTypeList+
+                            "\nGame Mode List: " + this.gameModeList+
+                            "\nDate Created Epoch List: " + this.dateCreatedEpochList);
         if(!this.championIcons.isEmpty()){
             System.out.println("championIcons has been initialized.");
         }

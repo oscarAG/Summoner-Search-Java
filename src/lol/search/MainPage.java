@@ -11,9 +11,12 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +32,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  * This page is what the user will see when he/she starts the application. 
@@ -38,7 +43,7 @@ public class MainPage {
     private JFrame masterFrame;
     //class objects
     private GameStaticData objGameStaticData; //class object to retrieve information from GameStaticData
-    private LoLSearch objLoLSearch; //class object to retrieve api key
+    private LoLSearch objLoLSearch = new LoLSearch(); //class object to retrieve api key
     //general variables
     private JLabel masterLabel; //holds the background image and masterPanel
     private JPanel masterPanel; //holds swing components of the frame
@@ -48,6 +53,7 @@ public class MainPage {
     //end values
     private String nameInput; //user input, name to be looked up
     private String regionCodeValue; //region code of region selected
+    private String version;
     
     public MainPage(JFrame mainFrame){ //arg constructor
         this.masterFrame = mainFrame;
@@ -78,7 +84,12 @@ public class MainPage {
         this.masterPanel.setBackground(new Color(0,0,0,150));
         this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,280, 0)); //border
             /*add components to the masterPanel*/
+            JPanel spacer = new JPanel();
+            spacer.setOpaque(false);
+            spacer.setPreferredSize(new Dimension(50,30));
+            
             addLogo(this.masterPanel);
+            this.masterPanel.add(spacer);
             addSummonerLabel(this.masterPanel);
             addSummonerTextField(this.masterPanel);
             addSearchButton(frame, this.masterPanel);
@@ -165,16 +176,17 @@ public class MainPage {
                 nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
                 String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
                 ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue);
+                getMostRecentVersion(regionCodeValue);
+                System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue+"\nVersion: " + version);
                 //prepare frame for next page
                 frame.getContentPane().removeAll();
                 frame.revalidate();
                 frame.repaint();
                 /*This is where the next page will be called. JSON information must be retrieved from another class.*/
                 //class objects
-                Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue); //get Summoner_ByName information from endpoint
-                Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue); //get Game_ById information from endpoint
-                LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue); //get data for all champions from endpoint
+                Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
+                Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
+                LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
                 MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions); //proceed to match history page
             }
         });
@@ -250,5 +262,28 @@ public class MainPage {
         } catch (FontFormatException ex) {
             Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    public void getMostRecentVersion(String regionCode){
+        String jsonResponse = null;
+        try {
+            URL url = new URL("https://global.api.pvp.net/api/lol/static-data/"+regionCode+"/v1.2/versions?api_key=" + this.objLoLSearch.getApiKey());
+            //retrieve JSON
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            String strTemp = "";
+            while (null != (strTemp = br.readLine())) {
+                    jsonResponse = strTemp;
+            }
+            JSONArray obj = new JSONArray(jsonResponse);
+            
+            this.version = obj.get(0).toString();
+        } catch (JSONException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ProtocolException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
 }

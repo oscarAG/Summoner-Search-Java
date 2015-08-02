@@ -47,10 +47,12 @@ public class Game_ById {
     private final ArrayList<Integer> goldEarnedList = new ArrayList<>();
     private final ArrayList<Integer> minionsKilledList = new ArrayList<>();
     private final ArrayList<Long> dateCreatedMilli = new ArrayList<>();
+    private final ArrayList<String> gameModeList = new ArrayList<>();
+    private final ArrayList<String> subTypeList = new ArrayList<>();
     
-    public Game_ById(long summId, String cc){ //arg constructor
+    public Game_ById(long summId, String cc, String recentVersion){ //arg constructor
         this.objLoLSearch = new LoLSearch();
-        this.version = this.objLoLSearch.getVersion();
+        this.version = recentVersion;
         this.apiKey = objLoLSearch.getApiKey();
         this.summonerId = summId;
         this.regionCode = cc;
@@ -97,9 +99,48 @@ public class Game_ById {
             setItemIconMasterList(); //get item pictures
             setSpellOneList(jsonGamesArray); //set spell one list
             setSpellTwoList(jsonGamesArray); //set spell two list
+            setDateCreatedList(jsonGamesArray); //set date created list
+            setGameModeList(jsonGamesArray); //set game mode list
+            setSubTypeList(jsonGamesArray); //set sub type list
         } catch (JSONException ex) {
             Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    private void setSubTypeList(JSONArray array){
+        for(int i = 0; i < array.length(); i++){
+            try {
+                this.subTypeList.add(array.getJSONObject(i).getString("subType"));
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public ArrayList<String> getSubTypeList(){
+        return this.subTypeList;
+    }
+    private void setGameModeList(JSONArray array){
+        for(int i = 0; i < array.length(); i++){
+            try {
+                this.gameModeList.add(array.getJSONObject(i).getString("gameMode"));
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public ArrayList<String> getGameModeList(){
+        return this.gameModeList;
+    }
+    private void setDateCreatedList(JSONArray array){
+        for(int i = 0; i < array.length(); i++){
+            try {
+                this.dateCreatedMilli.add(array.getJSONObject(i).getLong("createDate"));
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public ArrayList<Long> getDateCreatedLongList(){
+        return this.dateCreatedMilli;
     }
     private void setSpellOneList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
@@ -289,8 +330,7 @@ public class Game_ById {
     private ImageIcon getItemIconOf(int id){
         ImageIcon temp = null;
         File f = new File("assets\\itemIcons\\" + id + ".png");
-        if(f.isFile()){ //check if picture exists
-            //System.out.println("Item " + id + " exists in assets folder.");
+        if(f.isFile()){ //check if picture exists in folder
             try {
                 BufferedImage c = ImageIO.read(new File("assets\\itemIcons\\" + id + ".png"));
                 temp = new ImageIcon(c);
@@ -302,9 +342,8 @@ public class Game_ById {
                 Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
-        else{
+        else{ //if it does not exist in a folder... try to grab from internet with most recent version
             try {
-                //System.out.println("Must grab item " + id + " from internet.");
                 URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + this.version + "/img/item/" + id + ".png"); //link to the pic
                 BufferedImage c = ImageIO.read(url);
                 temp = new ImageIcon(c);
@@ -312,11 +351,28 @@ public class Game_ById {
                 Image image = temp.getImage();
                 Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
                 temp = new ImageIcon(newImg);
+                ImageIO.write(c, "png",new File("assets\\itemIcons\\" + id + ".png")); //save to directory if it doesnt exist
+                System.out.println(id + " saved to directory.");
             } catch (ProtocolException ex) {
                 Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                System.out.println(id);
-                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+                try { //if most recent version does not return an item, try earlier version
+                    System.out.println("Error grabbing item " + id + " from internet. Trying earlier version...");
+                    URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + "5.2.1" + "/img/item/" + id + ".png"); //link to the pic
+                    BufferedImage c = ImageIO.read(url);
+                    temp = new ImageIcon(c);
+                    //resize
+                    Image image = temp.getImage();
+                    Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                    temp = new ImageIcon(newImg);
+                    ImageIO.write(c, "png",new File("assets\\itemIcons\\" + id + ".png")); //save to directory if it doesnt exist
+                    System.out.println(id + " saved to directory.");
+                    System.out.println("Item successfully taken from internet.");
+                } catch (MalformedURLException ex1) {
+                    Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex1);
+                } catch (IOException ex1) {
+                    Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             }
         }
         

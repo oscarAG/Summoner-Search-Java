@@ -132,28 +132,4 @@ public class GameStaticData {
         return temp;
     }
     
-    //DOES NOT WORK
-    public void getMostRecentVersion(String regionCode){
-        String jsonResponse = null;
-        try {
-            URL url = new URL("https://global.api.pvp.net/api/lol/static-data/"+regionCode+"/v1.2/versions?api_key=" + this.objLoLSearch.getApiKey());
-            //retrieve JSON
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String strTemp = "";
-            while (null != (strTemp = br.readLine())) {
-                    jsonResponse = strTemp;
-            }
-            System.out.println(jsonResponse);
-            JSONArray array = new JSONArray(jsonResponse);
-            System.out.println(array);
-        } catch (JSONException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ProtocolException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-    }
 }

@@ -6,12 +6,15 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,7 +28,7 @@ public class Summoner_ByName {
     private final LoLSearch objLoLSearch; //class object to retrieve api key
     private final String summonerName;
     private final String countryCode;
-    private final String version;
+    private String version;
     
     //end values
     private String jsonName;
@@ -35,13 +38,12 @@ public class Summoner_ByName {
     private long jsonRevisionDate;
     private ImageIcon profileIcon;
     
-    public Summoner_ByName(String nameString, String cc){ //arg constructor 
+    public Summoner_ByName(String nameString, String cc, String recentVersion){ //arg constructor 
         //MatchHistoryPage objHistoryPage = new MatchHistoryPage();
         this.objLoLSearch = new LoLSearch();
-        this.version = this.objLoLSearch.getVersion();
         this.summonerName = nameString;
         this.countryCode = cc;
-        
+        this.version = recentVersion;
         getJSONResponse(); //grab json response from api endpoint
         setProfileIcon(); //using the jsonProfileIconId, get the corresponding profile icon from the data dragon url
     }
@@ -100,11 +102,11 @@ public class Summoner_ByName {
             Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
             temp = new ImageIcon(newImg);
             this.profileIcon = temp;
-        } catch (ProtocolException ex) {
+        } catch (MalformedURLException ex) {
             Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
     }
     
 }
