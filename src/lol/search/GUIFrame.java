@@ -8,8 +8,8 @@ import javax.swing.JFrame;
  * @author Oscar
  */
 public class GUIFrame {
-    
-    private final String applicationName = "League of Legends Player Search"; //title bar name of the application
+    private final String version = "1.1.0";
+    private final String applicationName = "League of Legends Player Search " + version; //title bar name of the application
     private final JFrame frame; //main frame of the application
     
     public GUIFrame(){

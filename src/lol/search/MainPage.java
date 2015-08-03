@@ -144,7 +144,7 @@ public class MainPage {
         this.summonerTextField.setBackground(Color.LIGHT_GRAY);
         this.summonerTextField.setHorizontalAlignment(SwingConstants.CENTER);
         this.summonerTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.summonerTextField.setText("Osxander");
+        //this.summonerTextField.setText("Osxander");
         this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
         this.summonerTextField.setPreferredSize(new Dimension(222,30));
         textFieldHolder.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
@@ -187,7 +187,8 @@ public class MainPage {
                 Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
                 Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
                 LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
-                MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions); //proceed to match history page
+                League_ById objLeague = new League_ById(regionCodeValue, objSummByName.getSummonerId());
+                MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions, objLeague); //proceed to match history page
             }
         });
         buttonHolder.add(this.searchButton);

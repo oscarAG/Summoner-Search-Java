@@ -54,9 +54,11 @@ public class MatchHistoryPage {
     private final ArrayList<String> subTypeList;
     private final ArrayList<String> gameModeList;
     private final ArrayList<String> dateStringList = new ArrayList<>();
+    private final String tier;
+    private final String division;
     
     //public MatchHistoryPage(){} //empty constructor
-    public MatchHistoryPage(String regionCode,JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC){
+    public MatchHistoryPage(String regionCode,JFrame frame, Summoner_ByName objSBN, Game_ById objGBI, LoLStaticData_AllChampions objAC, League_ById objL){
         this.objGameStaticData = new GameStaticData(); //used to set background
         this.masterFrame = frame;
         //values carried over
@@ -77,6 +79,9 @@ public class MatchHistoryPage {
         this.dateCreatedEpochList = objGBI.getDateCreatedLongList();
         this.subTypeList = objGBI.getSubTypeList();
         this.gameModeList = objGBI.getGameModeList();
+        this.tier = objL.getTier();
+        this.division = objL.getDivision();
+        
         setConvertedDateList(this.dateCreatedEpochList);
         
         //printCarriedValues(); //check to confirm necessary values have been carried over successfully
@@ -157,20 +162,30 @@ public class MatchHistoryPage {
                 centerPanel.add(namePanel);
                 //empty panel
                 JPanel emptyPanel = new JPanel();
-                JLabel emptyLabel = new JLabel("---");
+                JLabel emptyLabel = new JLabel("-");
                 emptyPanel.add(emptyLabel);
                 emptyLabel.setForeground(new Color(0,0,0,0));
                 emptyPanel.setOpaque(false);
-                centerPanel.add(emptyPanel);
+                //centerPanel.add(emptyPanel);
                 //summoner level
                 String level = String.valueOf(this.summonerLevel);
-                JLabel summonerLevelLabel = new JLabel(level);
-                summonerLevelLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 20)); //custom font
+                JLabel summonerLevelLabel = new JLabel("Level: "+ level);
+                summonerLevelLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
                 summonerLevelLabel.setForeground(Color.WHITE); //text color
                 JPanel levelPanel = new JPanel();
                 levelPanel.setOpaque(false);
                 levelPanel.add(summonerLevelLabel);
-                centerPanel.add(levelPanel);
+                //centerPanel.add(levelPanel);
+                //tier
+                JLabel tierLabel = new JLabel(this.tier);
+                tierLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
+                tierLabel.setForeground(Color.WHITE); //text color
+                centerPanel.add(tierLabel);
+                //division
+                JLabel divisionLabel = new JLabel(this.division);
+                divisionLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
+                divisionLabel.setForeground(Color.WHITE); //text color
+                centerPanel.add(divisionLabel);
                 
                 headerPanel.add(centerPanel, BorderLayout.CENTER);
                 //empty panel to balance right side
@@ -214,7 +229,7 @@ public class MatchHistoryPage {
             subTypeLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
             matchPanel.add(modeSubPanel);
             //spacer panel
-            JLabel spacer = new JLabel("--");
+            JLabel spacer = new JLabel("----");
             spacer.setForeground(new Color(0,0,0,0));
             matchPanel.add(spacer);
             //outcome color 

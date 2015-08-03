@@ -259,11 +259,14 @@ public class Game_ById {
     }
     private int getMinionsKilled(JSONObject stats){
         int minions = 0;
-        try {
-            minions = stats.getInt("minionsKilled");
-        } catch (JSONException ex) {
-            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+        if(stats.has("minionsKilled")){
+            try {
+                minions = stats.getInt("minionsKilled");
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
         return minions;
     }
     public ArrayList<Integer> getMinionsKilled(){
@@ -274,11 +277,14 @@ public class Game_ById {
     }
     private int getGoldEarned(JSONObject stats){
         int goldEarned = 0;
-        try {
-            goldEarned = stats.getInt("goldEarned");
-        } catch (JSONException ex) {
-            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+        if(stats.has("goldEarned")){
+            try {
+                goldEarned = stats.getInt("goldEarned");
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
         return goldEarned;
     }
     private boolean outcomeOfGame(JSONObject stats){
@@ -358,7 +364,7 @@ public class Game_ById {
             } catch (IOException ex) {
                 try { //if most recent version does not return an item, try earlier version
                     System.out.println("Error grabbing item " + id + " from internet. Trying earlier version...");
-                    URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + "5.2.1" + "/img/item/" + id + ".png"); //link to the pic
+                    URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + "5.1.1" + "/img/item/" + id + ".png"); //link to the pic
                     BufferedImage c = ImageIO.read(url);
                     temp = new ImageIcon(c);
                     //resize
@@ -371,7 +377,21 @@ public class Game_ById {
                 } catch (MalformedURLException ex1) {
                     Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex1);
                 } catch (IOException ex1) {
-                    Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex1);
+                    try { //if most recent version does not return an item, try earlier version
+                        System.out.println("Error grabbing item " + id + " from internet. Trying earlier version...");
+                        URL url = new URL("http://ddragon.leagueoflegends.com/cdn/" + "4.1.2" + "/img/item/" + id + ".png"); //link to the pic
+                        BufferedImage c = ImageIO.read(url);
+                        temp = new ImageIcon(c);
+                        //resize
+                        Image image = temp.getImage();
+                        Image newImg = image.getScaledInstance(46,46,Image.SCALE_SMOOTH);
+                        temp = new ImageIcon(newImg);
+                        ImageIO.write(c, "png",new File("assets\\itemIcons\\" + id + ".png")); //save to directory if it doesnt exist
+                        System.out.println(id + " saved to directory.");
+                        System.out.println("Item successfully taken from internet.");
+                    } catch (IOException ex2) {
+                        Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex2);
+                    }
                 }
             }
         }
