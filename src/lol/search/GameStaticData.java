@@ -61,13 +61,11 @@ public class GameStaticData {
     public GameStaticData(){ //no arg constructor
     }
     
-    public String[] getChampionsArray(){
-        return champions;
-    }
-    
-    public String[] getRegionsArray(){
-        return regions;
-    }
+    /*
+        GET METHODS
+    */
+    public String[] getChampionsArray(){    return champions;   }
+    public String[] getRegionsArray(){      return regions;     }
     
     /*Return ImageIcon with random champion artwork*/
     public ImageIcon getBackgroundImageIcon(){

@@ -50,11 +50,11 @@ public class Summoner_ByName {
     }
     
     //get methods
-    public String getName(){    return this.jsonName;    }
-    public int getProfileIconId(){  return this.jsonProfileIconId;   }
-    public long getSummonerId(){ return this.jsonId;   }
-    public long getSummonerLevel(){ return this.jsonSummonerLevel;    }
-    public long getRevisionDate(){  return this.jsonRevisionDate;   }
+    public String getName(){            return this.jsonName;    }
+    public int getProfileIconId(){      return this.jsonProfileIconId;   }
+    public long getSummonerId(){        return this.jsonId;   }
+    public long getSummonerLevel(){     return this.jsonSummonerLevel;    }
+    public long getRevisionDate(){      return this.jsonRevisionDate;   }
     public ImageIcon getProfileIcon(){  return this.profileIcon;    }
     
     private void getJSONResponse(){
@@ -68,7 +68,6 @@ public class Summoner_ByName {
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            
             parseJSONResponse(jsonResponse); //parse the json response into usable values
             this.doesExist = true;
         }catch (IOException ex) {

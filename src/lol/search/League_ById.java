@@ -34,6 +34,11 @@ public class League_ById {
         getJSONResponse();
     }
     
+    /*
+        GET METHODS
+    */
+    public String getDivision(){    return this.division;   }
+    public String getTier(){        return this.tier;       }
     
     private void getJSONResponse(){
         String jsonResponse = null; //unparsed json response
@@ -78,10 +83,5 @@ public class League_ById {
             Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public String getDivision(){
-        return this.division;
-    }
-    public String getTier(){
-        return this.tier;
-    }
+    
 }

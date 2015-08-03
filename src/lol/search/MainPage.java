@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -39,7 +41,7 @@ import org.json.JSONException;
  * This page is what the user will see when he/she starts the application. 
  * @author Oscar
  */
-public class MainPage {
+public class MainPage{
     private JFrame masterFrame;
     //class objects
     private GameStaticData objGameStaticData; //class object to retrieve information from GameStaticData
@@ -51,12 +53,21 @@ public class MainPage {
     private JComboBox regionsComboBox; //regions combobox, will be initialized in method
     private JButton searchButton; //button 
     private JLabel errorLabel;
+    private final Timer timer;
     //end values
     private String nameInput; //user input, name to be looked up
     private String regionCodeValue; //region code of region selected
     private String version;
     
     public MainPage(JFrame mainFrame){ //arg constructor
+        timer = new Timer();
+        timer.schedule(new TimerTask(){
+            @Override
+            public void run(){
+                masterFrame.revalidate();
+                masterFrame.repaint();
+            }
+        }, 17,17);
         this.masterFrame = mainFrame;
         loadFont();
         initializeMasterLabel(this.masterFrame);
@@ -84,11 +95,11 @@ public class MainPage {
         this.masterPanel.setLayout(new BoxLayout(this.masterPanel, BoxLayout.Y_AXIS));
         this.masterPanel.setBackground(new Color(0,0,0,150));
         this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,280, 0)); //border
+        
             /*add components to the masterPanel*/
             JPanel spacer = new JPanel();
             spacer.setOpaque(false);
             spacer.setPreferredSize(new Dimension(50,30));
-            
             addLogo(this.masterPanel);
             this.masterPanel.add(spacer);
             addSummonerLabel(this.masterPanel);
@@ -207,10 +218,11 @@ public class MainPage {
                         frame.getContentPane().removeAll();
                         frame.revalidate();
                         frame.repaint();
-                        Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
-                        LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
-                        League_ById objLeague = new League_ById(regionCodeValue, objSummByName.getSummonerId());
-                        MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions, objLeague); //proceed to match history page 
+                        Game_ById GAME_BY_ID = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
+                        LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
+                        League_ById LEAGUE_BY_ID = new League_ById(regionCodeValue, objSummByName.getSummonerId());
+                        MatchHistoryPage MATCH_HISTORY_PAGE = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, GAME_BY_ID, DATA_ALL_CHAMPIONS, LEAGUE_BY_ID); //proceed to match history page 
+                        timer.cancel();
                     }
                     else{
                         errorLabel.setText("Player does not exist. Please try again.");
@@ -271,14 +283,25 @@ public class MainPage {
         //combobox
         JPanel comboBoxPanel = new JPanel();
         this.regionsComboBox = new JComboBox(this.objGameStaticData.getRegionsArray()); //different regions in the combo box
-        this.regionsComboBox.setEditable(true); //allow the user to choose
+        this.regionsComboBox.setEditable(false); //allow the user to choose
         this.regionsComboBox.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
+        
+        this.regionsComboBox.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                JComboBox comboBox = (JComboBox) e.getSource();
+                Object selected = comboBox.getSelectedItem();
+                if(regionsComboBox.isPopupVisible()){
+                    System.out.println("Popup visible.");
+                    masterFrame.revalidate();
+                    masterFrame.repaint();
+                }
+            }
+        });
         comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
         comboBoxPanel.add(this.regionsComboBox);
         comboBoxPanel.setOpaque(false);
         panel.add(comboBoxPanel);
     }
-    
     /*Load font for use with labels*/
     private void loadFont(){
         //load font
@@ -315,5 +338,9 @@ public class MainPage {
         } catch (IOException ex) {
             Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         } 
+    }
+    public void run(){ //does not work yet
+        masterFrame.revalidate();
+        masterFrame.repaint();
     }
 }

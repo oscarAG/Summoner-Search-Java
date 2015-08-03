@@ -43,6 +43,14 @@ public class LoLStaticData_AllChampions {
         
         getJSONResponse(); //grab json response from api
     }
+    
+    /*
+        GET METHODS
+    */
+    public ArrayList<String> getChampionKeys(){     return this.championKeys;       }
+    public ArrayList<ImageIcon> getChampionIcons(){ return this.championIcons;      }
+    
+    
     private void getJSONResponse(){ /*IMPORTANT - This url call only brings back information with championdata focused on returning an image, not all the stats per champion*/
         String jsonResponse = null; //unparsed json response
         try { 
@@ -106,17 +114,13 @@ public class LoLStaticData_AllChampions {
             System.out.println("    Champion Key for match " + i + ": " + this.championKeys.get(i));
         }
     }
-    public ArrayList<String> getChampionKeys(){
-        return this.championKeys;
-    }
+    
     private void setChampionIcons(){
         for(int i = 0; i < this.championKeys.size(); i++){
             this.championIcons.add(getChampionIconOf(this.championKeys.get(i)));
         }
     }
-    public ArrayList<ImageIcon> getChampionIcons(){
-        return this.championIcons;
-    }
+    
     private ImageIcon getChampionIconOf(String champKey){
         ImageIcon temp = null;
         File f = new File("assets\\championIcons\\" + champKey + ".png");
@@ -149,7 +153,6 @@ public class LoLStaticData_AllChampions {
                 Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
         return temp;
     }
 }

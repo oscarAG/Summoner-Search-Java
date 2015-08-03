@@ -29,26 +29,27 @@ public class Game_ById {
     private final LoLSearch objLoLSearch;
     //general variables
     private final String apiKey;
-    private final long summonerId;
     private final String regionCode;
     private final String version;
+    private final long summonerId;
+    
     //end values
-    private final ArrayList<Integer> championIdList = new ArrayList<>(); //IDs of the champions played by the searched player
-    private final ArrayList<ArrayList<Integer>> itemIdMasterList = new ArrayList<>();//IDs of the items picked by the searched player for the 10 matches
-    private final ArrayList<Integer> killsList = new ArrayList<>();
-    private final ArrayList<Integer> assistsList = new ArrayList<>();
-    private final ArrayList<Integer> deathsList = new ArrayList<>();
-    private final ArrayList<ArrayList<ImageIcon>> itemIconMasterList = new ArrayList<>(); //item icons of the 10 matches
-    private final ArrayList<Boolean> outcomeList = new ArrayList<>();
-    private final ArrayList<Integer> spellOneList = new ArrayList<>();
-    private final ArrayList<Integer> spellTwoList = new ArrayList<>();
-    private final ArrayList<ImageIcon> spellOneIconList = new ArrayList<>();
-    private final ArrayList<ImageIcon> spellTwoIconList = new ArrayList<>();
-    private final ArrayList<Integer> goldEarnedList = new ArrayList<>();
-    private final ArrayList<Integer> minionsKilledList = new ArrayList<>();
-    private final ArrayList<Long> dateCreatedMilli = new ArrayList<>();
-    private final ArrayList<String> gameModeList = new ArrayList<>();
-    private final ArrayList<String> subTypeList = new ArrayList<>();
+    private final ArrayList<Integer>    championIdList = new ArrayList<>(); //IDs of the champions played by the searched player
+    private final ArrayList<Integer>    killsList = new ArrayList<>();
+    private final ArrayList<Integer>    assistsList = new ArrayList<>();
+    private final ArrayList<Integer>    deathsList = new ArrayList<>();
+    private final ArrayList<Integer>    spellOneList = new ArrayList<>();
+    private final ArrayList<Integer>    spellTwoList = new ArrayList<>();
+    private final ArrayList<Integer>    goldEarnedList = new ArrayList<>();
+    private final ArrayList<Integer>    minionsKilledList = new ArrayList<>();
+    private final ArrayList<ImageIcon>  spellOneIconList = new ArrayList<>();
+    private final ArrayList<ImageIcon>  spellTwoIconList = new ArrayList<>();
+    private final ArrayList<Boolean>    outcomeList = new ArrayList<>();
+    private final ArrayList<Long>       dateCreatedMilli = new ArrayList<>();
+    private final ArrayList<String>     gameModeList = new ArrayList<>();
+    private final ArrayList<String>     subTypeList = new ArrayList<>();
+    private final ArrayList<ArrayList<Integer>>     itemIdMasterList = new ArrayList<>();//IDs of the items picked by the searched player for the 10 matches
+    private final ArrayList<ArrayList<ImageIcon>>   itemIconMasterList = new ArrayList<>(); //item icons of the 10 matches
     
     public Game_ById(long summId, String cc, String recentVersion){ //arg constructor
         this.objLoLSearch = new LoLSearch();
@@ -61,11 +62,27 @@ public class Game_ById {
         
     }
     
-    //get methods
-    public ArrayList<Integer> getChampionIdList(){  return championIdList;   }
-    public ArrayList<ImageIcon> getSpellOneIconList(){return this.spellOneIconList;}
-    public ArrayList<ImageIcon> getSpellTwoIconList(){return this.spellTwoIconList;}
+    /*
+        GET METHODS
+    */
+    public ArrayList<Integer> getChampionIdList(){      return this.championIdList;     }
+    public ArrayList<Integer> getSpellOneList(){        return this.spellOneList;       }
+    public ArrayList<Integer> getSpellTwoList(){        return this.spellTwoList;       }
+    public ArrayList<Integer> getKillsList(){           return this.killsList;          }
+    public ArrayList<Integer> getAssistsList(){         return this.assistsList;        }
+    public ArrayList<Integer> getDeathsList(){          return this.deathsList;         }
+    public ArrayList<ImageIcon> getSpellOneIconList(){  return this.spellOneIconList;   }
+    public ArrayList<ImageIcon> getSpellTwoIconList(){  return this.spellTwoIconList;   }
+    public ArrayList<String> getSubTypeList(){          return this.subTypeList;        }
+    public ArrayList<String> getGameModeList(){         return this.gameModeList;       }
+    public ArrayList<Long> getDateCreatedLongList(){    return this.dateCreatedMilli;   }
+    public ArrayList<ArrayList<Integer>> getItemIdMasterList(){     return this.itemIdMasterList;   }
+    public ArrayList<ArrayList<ImageIcon>> getItemIconMasterList(){ return this.itemIconMasterList; }
     
+    
+    /*
+        JSON METHODS
+    */
     private void getJSONResponse(){
         String jsonResponse = null; //unparsed json response
         try {
@@ -92,7 +109,7 @@ public class Game_ById {
         try {
             jsonObj = new JSONObject(jsonString); //object of the JSON 
             jsonGamesArray = jsonObj.getJSONArray("games");
-            
+
             //set end values
             setChampionIdList(jsonGamesArray); //set champion id list end value
             setStatsObject(jsonGamesArray); //set stats object 
@@ -106,6 +123,10 @@ public class Game_ById {
             Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /*
+        SET METHODS
+    */
     private void setSubTypeList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             try {
@@ -115,9 +136,7 @@ public class Game_ById {
             }
         }
     }
-    public ArrayList<String> getSubTypeList(){
-        return this.subTypeList;
-    }
+    
     private void setGameModeList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             try {
@@ -127,9 +146,7 @@ public class Game_ById {
             }
         }
     }
-    public ArrayList<String> getGameModeList(){
-        return this.gameModeList;
-    }
+    
     private void setDateCreatedList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             try {
@@ -139,9 +156,7 @@ public class Game_ById {
             }
         }
     }
-    public ArrayList<Long> getDateCreatedLongList(){
-        return this.dateCreatedMilli;
-    }
+    
     private void setSpellOneList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             //get champion id from each game object
@@ -154,6 +169,7 @@ public class Game_ById {
             this.spellOneIconList.add(setSpellIconOf(this.spellOneList.get(i)));
         }
     }
+    
     private void setSpellTwoList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             //get champion id from each game object
@@ -165,10 +181,19 @@ public class Game_ById {
             }
         }
     }
-    public ArrayList<Integer> getSpellTwoList(){
-        return this.spellTwoList;
+    
+    private void setChampionIdList(JSONArray array){
+        for(int i = 0; i < array.length(); i++){
+            //get champion id from each game object
+            try {
+                this.championIdList.add(array.getJSONObject(i).getInt("championId"));
+            } catch (JSONException ex) {
+                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+        }
     }
-    private ImageIcon setSpellIconOf(int id){
+    
+    private ImageIcon setSpellIconOf(int id){ //sets the spell icon of a specific item id
         String tempSpellKey = getSummonerSpellKeyOfId(id);
         ImageIcon temp = null;
         File f = new File("assets\\spellIcons\\" + tempSpellKey + ".png");
@@ -224,20 +249,7 @@ public class Game_ById {
         }
         return summonerSpellKey;
     }
-    public ArrayList<Integer> getSpellOneList(){
-        return this.spellOneList;
-    }
     
-    private void setChampionIdList(JSONArray array){
-        for(int i = 0; i < array.length(); i++){
-            //get champion id from each game object
-            try {
-                this.championIdList.add(array.getJSONObject(i).getInt("championId"));
-            } catch (JSONException ex) {
-                Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
-            } 
-        }
-    }
     private void setStatsObject(JSONArray array){ //set 10 stats objects to further grab information per match
         ArrayList<JSONObject> statsObjects = new ArrayList<>(); //holds the 10 stats objects 
         for(int i = 0; i < array.length(); i++){ 
@@ -321,9 +333,7 @@ public class Game_ById {
             System.out.println(this.itemIdMasterList.get(i));
         }
     }
-    public ArrayList<ArrayList<Integer>> getItemIdMasterList(){
-        return this.itemIdMasterList;
-    }
+    
     private void setItemIconMasterList(){ //get images from data dragon
         for(int i = 0; i < this.itemIdMasterList.size(); i++){
             ArrayList<ImageIcon> tempImageList = new ArrayList<>();
@@ -398,9 +408,6 @@ public class Game_ById {
         
         return temp;
     }
-    public ArrayList<ArrayList<ImageIcon>> getItemIconMasterList(){
-        return this.itemIconMasterList;
-    }
     
     private int setKills(JSONObject stats){ //grab kills from a single match
         int kills = 0;
@@ -413,9 +420,7 @@ public class Game_ById {
         }
         return kills;
     }
-    public ArrayList<Integer> getKillsList(){
-        return this.killsList;
-    }
+    
     private int setAssists(JSONObject stats){ //grab assists from a single match
         int assists = 0;
         if(stats.has("assists")){
@@ -427,9 +432,7 @@ public class Game_ById {
         }
         return assists;
     }
-    public ArrayList<Integer> getAssistsList(){
-        return this.assistsList;
-    }
+    
     private int setDeaths(JSONObject stats){ //grab assists from a single match
         int deaths = 0;
         if(stats.has("numDeaths")){
@@ -440,8 +443,5 @@ public class Game_ById {
             }
         }
         return deaths;
-    }
-    public ArrayList<Integer> getDeathsList(){
-        return this.deathsList;
     }
 }

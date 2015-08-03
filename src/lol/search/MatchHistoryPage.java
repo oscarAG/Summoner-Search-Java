@@ -39,17 +39,17 @@ public class MatchHistoryPage {
     private final String summonerName;
     private final long summonerLevel;
     private final ArrayList<ImageIcon> championIcons;
+    private final ArrayList<ImageIcon> spellOneIconList;
+    private final ArrayList<ImageIcon> spellTwoIconList;
     private final ArrayList<ArrayList<Integer>> itemIdMasterList; //list with lists of items picked in each match
     private final ArrayList<Integer> killsList; //list with the kills from the 10 matches
     private final ArrayList<Integer> assistsList; //list with the assists from the 10 matches
     private final ArrayList<Integer> deathsList; //list with the deaths from the 10 matches
+    private final ArrayList<Integer> goldList;
+    private final ArrayList<Integer> minionsKilledList;
     private final ArrayList<ArrayList<ImageIcon>> itemIconMasterList;
     private final ImageIcon profileIcon;
     private final ArrayList<Boolean> outcomeList;
-    private final ArrayList<ImageIcon> spellOneIconList;
-    private final ArrayList<ImageIcon> spellTwoIconList;
-    private final ArrayList<Integer> goldList;
-    private final ArrayList<Integer> minionsKilledList;
     private final ArrayList<Long> dateCreatedEpochList;
     private final ArrayList<String> subTypeList;
     private final ArrayList<String> gameModeList;
