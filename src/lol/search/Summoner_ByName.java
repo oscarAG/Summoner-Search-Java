@@ -37,6 +37,7 @@ public class Summoner_ByName {
     private long jsonSummonerLevel;
     private long jsonRevisionDate;
     private ImageIcon profileIcon;
+    private boolean doesExist;
     
     public Summoner_ByName(String nameString, String cc, String recentVersion){ //arg constructor 
         //MatchHistoryPage objHistoryPage = new MatchHistoryPage();
@@ -69,11 +70,9 @@ public class Summoner_ByName {
             }
             
             parseJSONResponse(jsonResponse); //parse the json response into usable values
-            
-        } catch (ProtocolException ex) {
-            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
+            this.doesExist = true;
+        }catch (IOException ex) {
+            this.doesExist = false;
         } 
     }
     private void parseJSONResponse(String jsonResponse){
@@ -89,7 +88,9 @@ public class Summoner_ByName {
             Logger.getLogger(Summoner_ByName.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
-    
+    public boolean getDoesExist(){
+        return this.doesExist;
+    }
     private void setProfileIcon(){
         ImageIcon temp;
         try {

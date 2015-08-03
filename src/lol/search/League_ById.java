@@ -47,13 +47,14 @@ public class League_ById {
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            //parseJSONResponse(jsonResponse); //parse the json response into usable values
+            parseJSONResponse(jsonResponse);
         } catch (MalformedURLException ex) {
             Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
+            this.division = "UNRANKED";
+            this.tier = "";
         }
-        parseJSONResponse(jsonResponse);
+        
     }
     
     

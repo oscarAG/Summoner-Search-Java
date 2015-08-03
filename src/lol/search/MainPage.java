@@ -50,6 +50,7 @@ public class MainPage {
     private final JTextField summonerTextField = new JTextField(20);; //textfield for the user input
     private JComboBox regionsComboBox; //regions combobox, will be initialized in method
     private JButton searchButton; //button 
+    private JLabel errorLabel;
     //end values
     private String nameInput; //user input, name to be looked up
     private String regionCodeValue; //region code of region selected
@@ -94,10 +95,23 @@ public class MainPage {
             addSummonerTextField(this.masterPanel);
             addSearchButton(frame, this.masterPanel);
             addRegionsComboBox(this.masterPanel);
-        
+            addErrorPanel();
+            
         label.add(this.masterPanel);
     }
-    
+    private void addErrorPanel(){
+        //summmoner label
+        this.errorLabel = new JLabel();
+        this.errorLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
+        this.errorLabel.setForeground(Color.RED); //text color
+        JPanel labelPanel = new JPanel();
+        labelPanel.add(this.errorLabel);
+        JPanel labelHolder = new JPanel();
+        labelHolder.add(labelPanel);
+        labelHolder.setOpaque(false);
+        labelPanel.setBackground(new Color(0,0,0,0));
+        this.masterPanel.add(labelPanel);
+    }
     /*Add logo to the master panel*/
     private void addLogo(JPanel panel){
         try {
@@ -119,7 +133,6 @@ public class MainPage {
             Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
     /*Add summoner label to the master panel*/
     private void addSummonerLabel(JPanel panel){
         //summmoner label
@@ -145,7 +158,7 @@ public class MainPage {
         this.summonerTextField.setHorizontalAlignment(SwingConstants.CENTER);
         this.summonerTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         //this.summonerTextField.setText("Osxander");
-        this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
+        this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
         this.summonerTextField.setPreferredSize(new Dimension(222,30));
         textFieldHolder.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
         textFieldHolder.add(this.summonerTextField);
@@ -165,6 +178,7 @@ public class MainPage {
         this.searchButton.setBackground(Color.DARK_GRAY);
         this.searchButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         //search button background image
+        
         this.searchButton.setHorizontalTextPosition(AbstractButton.CENTER);
         Image tempImage = buttonImage.getImage();
         Image newTempImg = tempImage.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
@@ -174,21 +188,36 @@ public class MainPage {
         this.searchButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){ //button pressed
                 nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
-                String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
-                ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                getMostRecentVersion(regionCodeValue);
-                System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue+"\nVersion: " + version);
-                //prepare frame for next page
-                frame.getContentPane().removeAll();
-                frame.revalidate();
-                frame.repaint();
-                /*This is where the next page will be called. JSON information must be retrieved from another class.*/
-                //class objects
-                Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
-                Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
-                LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
-                League_ById objLeague = new League_ById(regionCodeValue, objSummByName.getSummonerId());
-                MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions, objLeague); //proceed to match history page
+                if(nameInput.equals("")){
+                    errorLabel.setText("You need to type something!");
+                    frame.revalidate();
+                    frame.repaint();
+                    //add timer here to change it back to normal
+                }
+                else{
+                    String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
+                    ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
+                    getMostRecentVersion(regionCodeValue);
+                    System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue+"\nVersion: " + version);
+                    /*This is where the next page will be called. JSON information must be retrieved from another class.*/
+                    //class objects
+                    Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
+                    if(objSummByName.getDoesExist()){ //if the searched summoner exists
+                        //prepare frame for next page
+                        frame.getContentPane().removeAll();
+                        frame.revalidate();
+                        frame.repaint();
+                        Game_ById objGameById = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
+                        LoLStaticData_AllChampions objAllChampions = new LoLStaticData_AllChampions(objGameById.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
+                        League_ById objLeague = new League_ById(regionCodeValue, objSummByName.getSummonerId());
+                        MatchHistoryPage objMatchHistory = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, objGameById, objAllChampions, objLeague); //proceed to match history page 
+                    }
+                    else{
+                        errorLabel.setText("Player does not exist. Please try again.");
+                        frame.revalidate();
+                        frame.repaint();
+                    }
+                }
             }
         });
         buttonHolder.add(this.searchButton);

@@ -124,7 +124,7 @@ public class MatchHistoryPage {
                 JPanel buttonHolder = new JPanel();
                 ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
                 Image tempImage = buttonImage.getImage();
-                Image newTempImg = tempImage.getScaledInstance(110, 50, Image.SCALE_SMOOTH);
+                Image newTempImg = tempImage.getScaledInstance(75, 35, Image.SCALE_SMOOTH);
                 buttonImage = new ImageIcon(newTempImg);
                 JButton backButton = new JButton("BACK");
                 backButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
@@ -132,7 +132,7 @@ public class MatchHistoryPage {
                 backButton.setBackground(new Color(0,0,0,0));
                 backButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 backButton.setHorizontalTextPosition(AbstractButton.CENTER);
-                backButton.setPreferredSize(new Dimension(110,50));
+                backButton.setPreferredSize(new Dimension(75,35));
                 backButton.setIcon(buttonImage);
                 backButton.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){ //button pressed

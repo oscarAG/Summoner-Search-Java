@@ -115,13 +115,13 @@ public class GameStaticData {
         }
         else{
             try { //                                               Note: the version number has to be older for it to work
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+"5.2.1"+"/img/ui/"+tempString+".png"); //link to the pic
-            BufferedImage c = ImageIO.read(url);
-            temp = new ImageIcon(c);
-            //resize
-            Image image = temp.getImage();
-            Image newImg = image.getScaledInstance(30,30,Image.SCALE_SMOOTH);
-            temp = new ImageIcon(newImg);
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+"5.2.1"+"/img/ui/"+tempString+".png"); //link to the pic
+                BufferedImage c = ImageIO.read(url);
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(30,30,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
