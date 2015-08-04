@@ -130,7 +130,9 @@ public class Game_ById {
     private void setSubTypeList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             try {
-                this.subTypeList.add(array.getJSONObject(i).getString("subType"));
+                String subType = array.getJSONObject(i).getString("subType");
+                subType = subType.replaceAll("_", " "); //replace underscores with spaces
+                this.subTypeList.add(subType);
             } catch (JSONException ex) {
                 Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -140,7 +142,9 @@ public class Game_ById {
     private void setGameModeList(JSONArray array){
         for(int i = 0; i < array.length(); i++){
             try {
-                this.gameModeList.add(array.getJSONObject(i).getString("gameMode"));
+                String gameMode = array.getJSONObject(i).getString("gameMode");
+                gameMode = gameMode.replace("_", " "); //replace underscores with spaces
+                this.gameModeList.add(gameMode);
             } catch (JSONException ex) {
                 Logger.getLogger(Game_ById.class.getName()).log(Level.SEVERE, null, ex);
             }

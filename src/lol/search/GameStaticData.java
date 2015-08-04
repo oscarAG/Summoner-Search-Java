@@ -76,7 +76,7 @@ public class GameStaticData {
         int high = champions.length - 1;
         int random = seed.nextInt(high - low) + low;
         String randomChampion = champions[random];
-        System.out.println(randomChampion + " chosen to be background.");
+        //System.out.println(randomChampion + " chosen to be background."); //test
         
         //URL
         try {

@@ -93,6 +93,7 @@ public class MatchHistoryPage {
         
         this.masterFrame.add(backgroundLabel);
         this.masterFrame.revalidate();
+        System.out.println("Done.");
     }
     private void setConvertedDateList(ArrayList<Long> epDate){ //change epoch long date into formatted string
         Date realDate;
@@ -123,6 +124,7 @@ public class MatchHistoryPage {
                 //back button
                 JPanel buttonHolder = new JPanel();
                 ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
+                ImageIcon buttonPressedImage = new ImageIcon("assets\\other\\buttonPressed.png");
                 Image tempImage = buttonImage.getImage();
                 Image newTempImg = tempImage.getScaledInstance(75, 35, Image.SCALE_SMOOTH);
                 buttonImage = new ImageIcon(newTempImg);
@@ -133,9 +135,15 @@ public class MatchHistoryPage {
                 backButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 backButton.setHorizontalTextPosition(AbstractButton.CENTER);
                 backButton.setPreferredSize(new Dimension(75,35));
+                //pressed button
+                Image tempImage2 = buttonPressedImage.getImage();
+                Image newTempImg2 = tempImage2.getScaledInstance(75, 35, Image.SCALE_SMOOTH);
+                buttonPressedImage = new ImageIcon(newTempImg2);
                 backButton.setIcon(buttonImage);
+                backButton.setRolloverIcon(buttonPressedImage);
                 backButton.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){ //button pressed
+                        System.out.println("Going back...\n");
                         masterFrame.getContentPane().removeAll();
                         masterFrame.revalidate();
                         masterFrame.repaint();
@@ -339,9 +347,15 @@ public class MatchHistoryPage {
             minionPanel.add(minionValueLabel);
             minionMasterPanel.add(minionPanel);
             
+            //date
+            JPanel datePanel = new JPanel();
+            //datePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+            datePanel.setPreferredSize(new Dimension(110,30));
+            datePanel.setOpaque(false);
             JLabel dateLabel = new JLabel(this.dateStringList.get(i));
             dateLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
             dateLabel.setForeground(Color.WHITE);
+            datePanel.add(dateLabel);
 
             matchPanel.add(outcomeColorPanel);
             matchPanel.add(champIconLabel);
@@ -355,7 +369,7 @@ public class MatchHistoryPage {
             matchPanel.add(spacer3);
             matchPanel.add(minionMasterPanel);
             matchPanel.add(spacer4);
-            matchPanel.add(dateLabel);
+            matchPanel.add(datePanel);
             
             panelArrList.add(matchPanel);
         }

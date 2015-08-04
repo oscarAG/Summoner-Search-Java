@@ -41,7 +41,7 @@ import org.json.JSONException;
  * This page is what the user will see when he/she starts the application. 
  * @author Oscar
  */
-public class MainPage{
+public class MainPage implements ActionListener{
     private JFrame masterFrame;
     //class objects
     private GameStaticData objGameStaticData; //class object to retrieve information from GameStaticData
@@ -53,15 +53,16 @@ public class MainPage{
     private JComboBox regionsComboBox; //regions combobox, will be initialized in method
     private JButton searchButton; //button 
     private JLabel errorLabel;
-    private final Timer timer;
+    private final Timer frameTimer;
     //end values
     private String nameInput; //user input, name to be looked up
     private String regionCodeValue; //region code of region selected
     private String version;
     
     public MainPage(JFrame mainFrame){ //arg constructor
-        timer = new Timer();
-        timer.schedule(new TimerTask(){
+        System.out.println("Loading page...");
+        frameTimer = new Timer();
+        frameTimer.schedule(new TimerTask(){
             @Override
             public void run(){
                 masterFrame.revalidate();
@@ -74,6 +75,7 @@ public class MainPage{
         initializeMasterPanel(this.masterFrame, this.masterLabel);
         
         this.masterFrame.revalidate();
+        System.out.println("Done.");
     }
     
     /*Set background of the frame and prepare for the main panel*/
@@ -84,6 +86,7 @@ public class MainPage{
         //background label
         this.masterLabel = new JLabel(objGameStaticData.getBackgroundImageIcon()); //use method from obj to get a background
         this.masterLabel.setLayout(new FlowLayout());
+        this.masterLabel.setOpaque(false);
         frame.add(this.masterLabel);
     }
     
@@ -94,7 +97,7 @@ public class MainPage{
         this.masterPanel = new JPanel();
         this.masterPanel.setLayout(new BoxLayout(this.masterPanel, BoxLayout.Y_AXIS));
         this.masterPanel.setBackground(new Color(0,0,0,150));
-        this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,280, 0)); //border
+        this.masterPanel.setBorder(BorderFactory.createEmptyBorder(0,0,243, 0)); //border
         
             /*add components to the masterPanel*/
             JPanel spacer = new JPanel();
@@ -171,15 +174,47 @@ public class MainPage{
         //this.summonerTextField.setText("Osxander");
         this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
         this.summonerTextField.setPreferredSize(new Dimension(222,30));
+        this.summonerTextField.addActionListener(this);
         textFieldHolder.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
         textFieldHolder.add(this.summonerTextField);
         textFieldHolder.setOpaque(false);
         panel.add(textFieldHolder);
     }
-    
+    public void actionPerformed(ActionEvent e) { //action event for when either the button or the enter key is pressed
+        nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
+        if(nameInput.equals("")){
+            errorLabel.setText("You need to type something!");
+        }
+        else{
+            errorLabel.setText("Loading...");
+            String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
+            ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
+            getMostRecentVersion(regionCodeValue);
+            System.out.println("Loading next page...");
+            //System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue+"\nVersion: " + version);
+            /*This is where the next page will be called. JSON information must be retrieved from another class.*/
+            //class objects
+            Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
+            if(objSummByName.getDoesExist()){ //if the searched summoner exists
+                //prepare frame for next page
+                masterFrame.getContentPane().removeAll();
+                masterFrame.revalidate();
+                masterFrame.repaint();
+                Game_ById GAME_BY_ID = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
+                LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
+                League_ById LEAGUE_BY_ID = new League_ById(regionCodeValue, objSummByName.getSummonerId());
+                MatchHistoryPage MATCH_HISTORY_PAGE = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, GAME_BY_ID, DATA_ALL_CHAMPIONS, LEAGUE_BY_ID); //proceed to match history page 
+                frameTimer.cancel(); //stop frame timer from going forever
+            }
+            else{
+                errorLabel.setText("Player does not exist. Please try again.");
+            }    
+        }
+    }
     /*Add button to master panel*/
     private void addSearchButton(JFrame frame, JPanel panel){
         ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
+        ImageIcon buttonPressedImage = new ImageIcon("assets\\other\\buttonPressed.png");
         //button
         JPanel buttonHolder = new JPanel();
         this.searchButton = new JButton("PLAYER HISTORY");
@@ -188,50 +223,20 @@ public class MainPage{
         this.searchButton.setForeground(Color.WHITE); //text color
         this.searchButton.setBackground(Color.DARK_GRAY);
         this.searchButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //search button background image
-        
         this.searchButton.setHorizontalTextPosition(AbstractButton.CENTER);
+        //search button background image
+        //regular button
         Image tempImage = buttonImage.getImage();
         Image newTempImg = tempImage.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
         buttonImage = new ImageIcon(newTempImg);
+        //pressed button
+        Image tempImage2 = buttonPressedImage.getImage();
+        Image newTempImg2 = tempImage2.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
+        buttonPressedImage = new ImageIcon(newTempImg2);
         this.searchButton.setIcon(buttonImage);
+        this.searchButton.setRolloverIcon(buttonPressedImage);
         
-        this.searchButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){ //button pressed
-                nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
-                if(nameInput.equals("")){
-                    errorLabel.setText("You need to type something!");
-                    frame.revalidate();
-                    frame.repaint();
-                    //add timer here to change it back to normal
-                }
-                else{
-                    String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
-                    ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
-                    getMostRecentVersion(regionCodeValue);
-                    System.out.println("The button was pressed.\nnameInput text: " + nameInput + "\nRegion code: " + regionCodeValue+"\nVersion: " + version);
-                    /*This is where the next page will be called. JSON information must be retrieved from another class.*/
-                    //class objects
-                    Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
-                    if(objSummByName.getDoesExist()){ //if the searched summoner exists
-                        //prepare frame for next page
-                        frame.getContentPane().removeAll();
-                        frame.revalidate();
-                        frame.repaint();
-                        Game_ById GAME_BY_ID = new Game_ById(objSummByName.getSummonerId(), regionCodeValue, version); //get Game_ById information from endpoint
-                        LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
-                        League_ById LEAGUE_BY_ID = new League_ById(regionCodeValue, objSummByName.getSummonerId());
-                        MatchHistoryPage MATCH_HISTORY_PAGE = new MatchHistoryPage(regionCodeValue, masterFrame, objSummByName, GAME_BY_ID, DATA_ALL_CHAMPIONS, LEAGUE_BY_ID); //proceed to match history page 
-                        timer.cancel();
-                    }
-                    else{
-                        errorLabel.setText("Player does not exist. Please try again.");
-                        frame.revalidate();
-                        frame.repaint();
-                    }
-                }
-            }
-        });
+        this.searchButton.addActionListener(this);
         buttonHolder.add(this.searchButton);
         buttonHolder.setOpaque(false);
         panel.add(buttonHolder);
@@ -290,11 +295,6 @@ public class MainPage{
             public void actionPerformed(ActionEvent e){
                 JComboBox comboBox = (JComboBox) e.getSource();
                 Object selected = comboBox.getSelectedItem();
-                if(regionsComboBox.isPopupVisible()){
-                    System.out.println("Popup visible.");
-                    masterFrame.revalidate();
-                    masterFrame.repaint();
-                }
             }
         });
         comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0)); //border
@@ -338,9 +338,5 @@ public class MainPage{
         } catch (IOException ex) {
             Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         } 
-    }
-    public void run(){ //does not work yet
-        masterFrame.revalidate();
-        masterFrame.repaint();
     }
 }
