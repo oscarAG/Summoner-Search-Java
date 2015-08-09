@@ -107,12 +107,14 @@ public class MainPage implements ActionListener{
             this.masterPanel.add(spacer);
             addSummonerLabel(this.masterPanel);
             addSummonerTextField(this.masterPanel);
-            addSearchButton(frame, this.masterPanel);
+            addHistoryButton(frame, this.masterPanel);
+            addRankedStatsButton(frame, this.masterPanel);
             addRegionsComboBox(this.masterPanel);
             addErrorPanel();
             
         label.add(this.masterPanel);
     }
+    
     private void addErrorPanel(){
         //summmoner label
         this.errorLabel = new JLabel();
@@ -126,6 +128,7 @@ public class MainPage implements ActionListener{
         labelPanel.setBackground(new Color(0,0,0,0));
         this.masterPanel.add(labelPanel);
     }
+    
     /*Add logo to the master panel*/
     private void addLogo(JPanel panel){
         try {
@@ -147,6 +150,7 @@ public class MainPage implements ActionListener{
             Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
     /*Add summoner label to the master panel*/
     private void addSummonerLabel(JPanel panel){
         //summmoner label
@@ -180,6 +184,7 @@ public class MainPage implements ActionListener{
         textFieldHolder.setOpaque(false);
         panel.add(textFieldHolder);
     }
+    
     public void actionPerformed(ActionEvent e) { //action event for when either the button or the enter key is pressed
         nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for URL
         if(nameInput.equals("")){
@@ -211,13 +216,14 @@ public class MainPage implements ActionListener{
             }    
         }
     }
+    
     /*Add button to master panel*/
-    private void addSearchButton(JFrame frame, JPanel panel){
+    private void addHistoryButton(JFrame frame, JPanel panel){
         ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
         ImageIcon buttonPressedImage = new ImageIcon("assets\\other\\buttonPressed.png");
         //button
         JPanel buttonHolder = new JPanel();
-        this.searchButton = new JButton("PLAYER HISTORY");
+        this.searchButton = new JButton("MATCH HISTORY");
         this.searchButton.setPreferredSize(new Dimension(222,50));
         this.searchButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
         this.searchButton.setForeground(Color.WHITE); //text color
@@ -242,10 +248,74 @@ public class MainPage implements ActionListener{
         panel.add(buttonHolder);
     }
     
+    /*Add button to master panel*/
+    private void addRankedStatsButton(JFrame frame, JPanel panel){
+        ImageIcon buttonImage = new ImageIcon("assets\\other\\button.png");
+        ImageIcon buttonPressedImage = new ImageIcon("assets\\other\\buttonPressed.png");
+        //button
+        JButton rankedButton;
+        JPanel buttonHolder = new JPanel();
+        rankedButton = new JButton("RANKED STATS");
+        rankedButton.setPreferredSize(new Dimension(222,50));
+        rankedButton.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
+        rankedButton.setForeground(Color.WHITE); //text color
+        rankedButton.setBackground(Color.DARK_GRAY);
+        rankedButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        rankedButton.setHorizontalTextPosition(AbstractButton.CENTER);
+        //search button background image
+        //regular button
+        Image tempImage = buttonImage.getImage();
+        Image newTempImg = tempImage.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
+        buttonImage = new ImageIcon(newTempImg);
+        //pressed button
+        Image tempImage2 = buttonPressedImage.getImage();
+        Image newTempImg2 = tempImage2.getScaledInstance(222, 50, Image.SCALE_SMOOTH);
+        buttonPressedImage = new ImageIcon(newTempImg2);
+        rankedButton.setIcon(buttonImage);
+        rankedButton.setRolloverIcon(buttonPressedImage);
+        
+        rankedButton.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e){ //button pressed
+                        System.out.println("Ranked Stats button pressed.");
+                        nameInput = summonerTextField.getText().toLowerCase().replaceAll(" ", ""); //change text format for use with URL
+                        
+                        if(nameInput.equals("")){
+                            errorLabel.setText("You need to type something!");
+                        }
+                        else{
+                            String comboBoxValue = getComboBoxValue(regionsComboBox).toString(); //get combobox string
+                            ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
+                            getMostRecentVersion(regionCodeValue);
+                            Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
+                            if(objSummByName.getDoesExist()){
+                                //printValues();
+                                masterFrame.getContentPane().removeAll();
+                                RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(masterFrame, regionCodeValue, objSummByName);
+                            }
+                            else{
+                                errorLabel.setText("Player does not exist. Please try again.");
+                            }
+                        }
+                        
+                    }
+                });
+        buttonHolder.add(rankedButton);
+        buttonHolder.setOpaque(false);
+        panel.add(buttonHolder);
+    }
+    
+    public void printValues(){
+        System.out.println("Input Values from Main Page:\n"
+                            +  "    Input: " + nameInput + "\n"
+                            +  "    Region Code: " + regionCodeValue + "\n"
+                            +  "    Most Recent Version: " + version + "\n");
+    }
     /*Get selected value from combobox*/
     private Object getComboBoxValue(JComboBox cb){
         return cb.getSelectedItem();
     }
+    
     private void ConvertToCountryCode(String country){
         switch (country) {
             case "North America":
@@ -283,14 +353,18 @@ public class MainPage implements ActionListener{
                 break;
         }
     }
+    
     /*Add combobox to the master panel for the different regions*/
     private void addRegionsComboBox(JPanel panel){
         //combobox
         JPanel comboBoxPanel = new JPanel();
+        comboBoxPanel.setOpaque(false);
         this.regionsComboBox = new JComboBox(this.objGameStaticData.getRegionsArray()); //different regions in the combo box
         this.regionsComboBox.setEditable(false); //allow the user to choose
         this.regionsComboBox.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 10)); //custom font
-        
+        this.regionsComboBox.setForeground(Color.WHITE);
+        this.regionsComboBox.setBackground(new Color(0,0,0,100));
+        this.regionsComboBox.setOpaque(false);
         this.regionsComboBox.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 JComboBox comboBox = (JComboBox) e.getSource();
@@ -302,6 +376,7 @@ public class MainPage implements ActionListener{
         comboBoxPanel.setOpaque(false);
         panel.add(comboBoxPanel);
     }
+    
     /*Load font for use with labels*/
     private void loadFont(){
         //load font
@@ -316,6 +391,7 @@ public class MainPage implements ActionListener{
             Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
     public void getMostRecentVersion(String regionCode){
         String jsonResponse = null;
         try {
