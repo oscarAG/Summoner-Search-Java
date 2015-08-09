@@ -63,7 +63,8 @@ public class AllChampionsById {
         return dataObj;
     }
     
-    private String getChampNameFromId(int id){
+    
+    public String getChampNameFromId(int id){
         String name = null;
         Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
             while(keys.hasNext()){ //operations per instance of each champion object
@@ -85,6 +86,28 @@ public class AllChampionsById {
         return name;
     }
     
+    
+    public String getChampKeyFromId(int id){
+        String keyString = null;
+        Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
+            while(keys.hasNext()){ //operations per instance of each champion object
+                try {
+                    String key = (String)keys.next();
+                    if(allChampionsObject.get(key) instanceof JSONObject){
+                        JSONObject champObject = allChampionsObject.getJSONObject(key);
+                        //compare the id of the current champion to the id of the champion played by the player
+                        if(champObject.getInt("id") == id){
+                            keyString = champObject.getString("key");
+                            break;
+                        }
+                        
+                    }
+                } catch (JSONException ex) {
+                    Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+            }
+        return keyString;
+    }
     
     
     public boolean getIsResponsive(){
