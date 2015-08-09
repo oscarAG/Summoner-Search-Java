@@ -142,6 +142,7 @@ public class MatchHistoryPage {
                 backButton.setIcon(buttonImage);
                 backButton.setRolloverIcon(buttonPressedImage);
                 backButton.addActionListener(new ActionListener(){
+                    @Override
                     public void actionPerformed(ActionEvent e){ //button pressed
                         System.out.println("Going back...\n");
                         masterFrame.getContentPane().removeAll();
