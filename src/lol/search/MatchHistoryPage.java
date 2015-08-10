@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.AbstractButton;
@@ -188,12 +189,12 @@ public class MatchHistoryPage {
                 //tier
                 JLabel tierLabel = new JLabel(this.tier);
                 tierLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
-                tierLabel.setForeground(Color.WHITE); //text color
+                tierLabel.setForeground(new Color(219,219,219)); //text color
                 centerPanel.add(tierLabel);
                 //division
                 JLabel divisionLabel = new JLabel(this.division);
                 divisionLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
-                divisionLabel.setForeground(Color.WHITE); //text color
+                divisionLabel.setForeground(new Color(219,219,219)); //text color
                 centerPanel.add(divisionLabel);
                 
                 headerPanel.add(centerPanel, BorderLayout.CENTER);
@@ -323,8 +324,10 @@ public class MatchHistoryPage {
             goldPanel.setOpaque(false);
             JLabel bagLabel = new JLabel(goldIcon);
             goldPanel.add(bagLabel);
-            int tempGoldValue = this.goldList.get(i) / 1000;
-            JLabel goldLabel = new JLabel(tempGoldValue + "k");
+            System.out.println(this.goldList.get(i));
+            double tempGoldValue = (double)(this.goldList.get(i)) / 1000;
+            String goldString = new DecimalFormat("###.#").format(tempGoldValue); 
+            JLabel goldLabel = new JLabel(goldString + "k");
             goldLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 15)); //custom font
             goldLabel.setForeground(Color.WHITE);
             goldPanel.add(goldLabel);
