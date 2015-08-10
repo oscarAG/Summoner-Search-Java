@@ -3,10 +3,8 @@ package lol.search;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -15,8 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 /**
  *
@@ -81,6 +77,26 @@ public class GameStaticData {
         //URL
         try {
             URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+randomChampion+"_0.jpg");
+            //Get image
+            BufferedImage c = ImageIO.read(url);
+            image = new ImageIcon(c);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ProtocolException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return image;
+    }
+    
+    /*Return ImageIcon with chosen champion artwork*/
+    public ImageIcon getBackgroundImageIcon(String key){
+        ImageIcon image = null;
+        
+        //URL
+        try {
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+key+"_0.jpg");
             //Get image
             BufferedImage c = ImageIO.read(url);
             image = new ImageIcon(c);
