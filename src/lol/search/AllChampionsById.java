@@ -20,10 +20,13 @@ import org.json.JSONObject;
  */
 public class AllChampionsById {
     private boolean isResponsive;
-    private String apiKey = "5ef85c1b-a4b7-4001-8b12-9a4fad596e08";
-    private String region = "na";
+    private final String apiKey;
+    private final String region;
     private JSONObject allChampionsObject;
-    public AllChampionsById(){
+    public AllChampionsById(String region){
+        this.region = region;
+        LoLSearch objLoL = new LoLSearch();
+        apiKey = objLoL.getApiKey();
         String jsonResponse = getJSONResponse();
         allChampionsObject = getJSONObjFromResponse(jsonResponse);
         
