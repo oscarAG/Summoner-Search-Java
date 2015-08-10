@@ -109,7 +109,7 @@ public class LoLStaticData_AllChampions {
         }
         //printChampionKeys();
     }
-    private void printChampionKeys(){
+    public void printChampionKeys(){
         for(int i = 0; i < this.championKeys.size(); i++){
             System.out.println("    Champion Key for match " + i + ": " + this.championKeys.get(i));
         }
