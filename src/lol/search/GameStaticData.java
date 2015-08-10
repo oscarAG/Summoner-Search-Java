@@ -146,4 +146,40 @@ public class GameStaticData {
         return temp;
     }
     
+    /*check to see if the loading art is there, and if not, grab it from the api and save it locally.*/
+    public ImageIcon initLoadingArt(String key){
+        ImageIcon temp = null;
+        File f = new File("assets\\loadIcons\\" + key + ".png"); 
+        if(f.isFile()){
+            try {
+                //System.out.println("Image exists.");
+                BufferedImage c = ImageIO.read(new File("assets\\loadIcons\\" + key + ".png"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(290,520,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       }
+        else{
+            try {
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/loading/"+key+"_0.jpg"); //link to the pic
+                BufferedImage c = ImageIO.read(url);
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(290,504,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+                ImageIO.write(c, "png",new File("assets\\loadIcons\\" + key + ".png")); //save to directory if it doesnt exist
+                System.out.println(key + " saved to directory.");
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return temp;
+    }
 }
