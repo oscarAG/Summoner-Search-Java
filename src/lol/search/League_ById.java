@@ -25,6 +25,8 @@ public class League_ById {
     //end values
     private String tier;
     private String division;
+    private int wins;
+    private int losses;
     
     
     public League_ById(String region, long id){//constructor
@@ -39,6 +41,8 @@ public class League_ById {
     */
     public String getDivision(){    return this.division;   }
     public String getTier(){        return this.tier;       }
+    public int getWins(){           return this.wins;       }
+    public int getLosses(){         return this.losses;     } 
     
     private void getJSONResponse(){
         String jsonResponse = null; //unparsed json response
@@ -65,17 +69,17 @@ public class League_ById {
     
     private void parseJSONResponse(String jsonString){
         JSONObject jsonObj = null;
-        /*This array holds all 10 matches with their info.*/
         JSONArray jsonLeagueArr = null;
         try {
             String idString = Objects.toString(this.summId, null);
             jsonObj = new JSONObject(jsonString); //object of the JSON 
             jsonLeagueArr = jsonObj.getJSONArray(idString);
-            
             //set end values
             this.tier = jsonLeagueArr.getJSONObject(0).getString("tier");
             JSONArray entries = jsonLeagueArr.getJSONObject(0).getJSONArray("entries");
             this.division = entries.getJSONObject(0).getString("division");
+            this.wins = entries.getJSONObject(0).getInt("wins");
+            this.losses = entries.getJSONObject(0).getInt("losses");
             //System.out.println(this.tier + " " + this.division);
             
             
