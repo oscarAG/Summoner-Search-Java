@@ -291,7 +291,7 @@ public class MainPage implements ActionListener{
                             if(objSummByName.getDoesExist()){
                                 //printValues();
                                 masterFrame.getContentPane().removeAll();
-                                RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(masterFrame, regionCodeValue, objSummByName);
+                                RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(version, masterFrame, regionCodeValue, objSummByName);
                             }
                             else{
                                 errorLabel.setText("Player does not exist. Please try again.");
