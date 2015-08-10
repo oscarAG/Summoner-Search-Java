@@ -324,7 +324,6 @@ public class MatchHistoryPage {
             goldPanel.setOpaque(false);
             JLabel bagLabel = new JLabel(goldIcon);
             goldPanel.add(bagLabel);
-            System.out.println(this.goldList.get(i));
             double tempGoldValue = (double)(this.goldList.get(i)) / 1000;
             String goldString = new DecimalFormat("###.#").format(tempGoldValue); 
             JLabel goldLabel = new JLabel(goldString + "k");
