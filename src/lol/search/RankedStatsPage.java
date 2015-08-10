@@ -17,6 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -37,6 +40,7 @@ public class RankedStatsPage {
     //class objects
     private GameStaticData OBJ_GAME_STATIC_DATA;
     private RankedStatsById OBJ_RANKED_STATS_BY_ID;
+    private AllChampionsById OBJ_ALL_CHAMPS_BY_ID;
     private final League_ById OBJ_LEAGUE_BYID; 
     //carried over values
     private final String version;
@@ -61,11 +65,13 @@ public class RankedStatsPage {
     private ArrayList<JButton> champButtons = new ArrayList<>();
     private int counter = 0;
     private final JLabel loadArtLabel = new JLabel();
-    private final JLabel bodyHeaderText = new JLabel();
+    private final JLabel nameHeader = new JLabel();
+    private final JLabel titleHeader = new JLabel();
     private final Color backgroundColor = new Color(0,0,0,215);
+    private ArrayList<Integer> champIdList = new ArrayList<>();
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
-        
+        //LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
         this.OBJ_GAME_STATIC_DATA = new GameStaticData();
         this.summonerName = objSummByName.getName();
         this.summonerId = objSummByName.getSummonerId();
@@ -73,6 +79,7 @@ public class RankedStatsPage {
         this.version = version;
         this.region = region;
         this.profileIcon = objSummByName.getProfileIcon();
+        this.OBJ_ALL_CHAMPS_BY_ID = new AllChampionsById(this.region);
         //call to other class for more info
         this.OBJ_LEAGUE_BYID = new League_ById(this.region, this.summonerId);
         this.tier = this.OBJ_LEAGUE_BYID.getTier();
@@ -81,6 +88,7 @@ public class RankedStatsPage {
         this.losses = this.OBJ_LEAGUE_BYID.getLosses();
         setSeason("SEASON2015");
         rankedStatsClassOperations(this.version, this.summonerId, this.region, this.season);
+        setChampIdList();
         this.winPercentage = getWinPercentage(this.wins, this.losses);
         //this.objRankedStats.printValues(); //print values carried over to the ranked stats class
         printCarriedValues();
@@ -208,8 +216,7 @@ public class RankedStatsPage {
                 headerPanel.add(ee, BorderLayout.LINE_END);
                 return headerPanel;
     }
-    private JPanel bodyPanel(){
-        JPanel body = new JPanel();
+    private JPanel bodyPanel(JPanel body){
         body.setLayout(new BoxLayout(body, BoxLayout.X_AXIS));
         body.setBackground(backgroundColor);
         body.setPreferredSize(new Dimension(1200,530));
@@ -217,18 +224,39 @@ public class RankedStatsPage {
         //load art 
         this.loadArtLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         this.loadArtLabel.setPreferredSize(new Dimension(290, 504));
-        body.add(loadArtLabel);
+        body.add(this.loadArtLabel);
         
         JPanel panel = new JPanel(new FlowLayout());
         panel.setPreferredSize(new Dimension(800,514));
         panel.setOpaque(false);
-        this.bodyHeaderText.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
-        this.bodyHeaderText.setForeground(Color.WHITE);
-        this.bodyHeaderText.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(this.bodyHeaderText);
+        panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
+        headerPanel.setPreferredSize(new Dimension(800, 45));
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        this.nameHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
+        this.nameHeader.setForeground(Color.WHITE);
+        this.nameHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.titleHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 16)); //custom font
+        this.titleHeader.setForeground(Color.GRAY);
+        this.titleHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(this.nameHeader);
+        panel.add(this.titleHeader);
         body.add(panel);
         
         return body;
+    }
+    private void setChampIdList(){
+        for(int i = 0; i < this.objChampRankedList.size(); i++){
+            try {
+                this.champIdList.add(this.objChampRankedList.get(i).getInt("id"));
+            } catch (JSONException ex) {
+                Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        //this.objChampRankedList
     }
     private JScrollPane championSelectPanel(){
         JPanel mainPanel = new JPanel(new FlowLayout());
@@ -250,7 +278,8 @@ public class RankedStatsPage {
                 public void actionPerformed(ActionEvent e){ //button pressed
                     background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
                     loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
-                    bodyHeaderText.setText(champKeyList.get(position));
+                    nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
+                    titleHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
                     masterFrame.revalidate();
                     masterFrame.repaint();
                 }
@@ -288,7 +317,8 @@ public class RankedStatsPage {
                            "    Tier: "  + this.tier + "\n" + 
                            "    Wins: " + this.wins + "\n" + 
                            "    Losses: " + this.losses + "\n" +
-                           "    Win %: " + this.winPercentage + "%" + "\n");
+                           "    Win %: " + this.winPercentage + "%" + "\n"
+                            + this.champIdList);
     }
     
     private void frameRefresh(JFrame frame){
@@ -311,7 +341,9 @@ public class RankedStatsPage {
         mainPanel.setOpaque(false);
         mainPanel.setLayout(new FlowLayout()); //add panels to this
         mainPanel.add(headerPanel());
-        mainPanel.add(bodyPanel());
+        //body panel
+        JPanel body = new JPanel();
+        mainPanel.add(bodyPanel(body));
         mainPanel.add(championSelectPanel());
         //mainPanel.add(bodyPanel());
         return mainPanel;

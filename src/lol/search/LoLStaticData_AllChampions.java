@@ -27,8 +27,8 @@ import org.json.JSONObject;
  */
 public class LoLStaticData_AllChampions {
     private LoLSearch objLoLSearch;
-    private final ArrayList<Integer> championIdList;
-    private final String regionCode;
+    private ArrayList<Integer> championIdList;
+    private String regionCode;
     private String version;
     
     //end values
@@ -63,7 +63,7 @@ public class LoLStaticData_AllChampions {
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            
+            System.out.println(jsonResponse);
             parseJSONResponse(jsonResponse); //parse the json response into usable values
             
         } catch (MalformedURLException ex) {
