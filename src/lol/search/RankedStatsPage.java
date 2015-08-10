@@ -60,8 +60,12 @@ public class RankedStatsPage {
     private JLabel background;
     private ArrayList<JButton> champButtons = new ArrayList<>();
     private int counter = 0;
+    private final JLabel loadArtLabel = new JLabel();
+    private final JLabel bodyHeaderText = new JLabel();
+    private final Color backgroundColor = new Color(0,0,0,215);
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
+        
         this.OBJ_GAME_STATIC_DATA = new GameStaticData();
         this.summonerName = objSummByName.getName();
         this.summonerId = objSummByName.getSummonerId();
@@ -99,7 +103,7 @@ public class RankedStatsPage {
             JPanel headerPanel = new JPanel();
             headerPanel.setLayout(new BorderLayout());
             //headerPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-            headerPanel.setBackground(new Color(0,0,0,170));
+            headerPanel.setBackground(backgroundColor);
             headerPanel.setPreferredSize(headerDimension);
                 //back button
                 JPanel buttonHolder = new JPanel();
@@ -169,7 +173,7 @@ public class RankedStatsPage {
                 //tier
                 JLabel tierLabel = new JLabel(this.tier);
                 tierLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
-                tierLabel.setForeground(Color.WHITE); //text color
+                tierLabel.setForeground(new Color(219,219,219)); //text color
                 tierLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 topCenter.add(tierLabel);
                 //empty spacer
@@ -177,7 +181,7 @@ public class RankedStatsPage {
                 //division
                 JLabel divisionLabel = new JLabel(this.division);
                 divisionLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 13)); //custom font
-                divisionLabel.setForeground(Color.WHITE); //text color
+                divisionLabel.setForeground(new Color(219,219,219)); //text color
                 divisionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 topCenter.add(divisionLabel);
                 //bottom center panel
@@ -189,7 +193,7 @@ public class RankedStatsPage {
                 //wins
                 JLabel winsLabel = new JLabel("W: " + this.wins + "   L: " + this.losses + "   Win Ratio: " + this.winPercentage + "%");
                 winsLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
-                winsLabel.setForeground(Color.WHITE); //text color
+                winsLabel.setForeground(new Color(219,219,219)); //text color
                 winsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 bottomCenter.add(winsLabel);
                 
@@ -206,14 +210,30 @@ public class RankedStatsPage {
     }
     private JPanel bodyPanel(){
         JPanel body = new JPanel();
-        body.setBackground(new Color(0,0,0,170));
+        body.setLayout(new BoxLayout(body, BoxLayout.X_AXIS));
+        body.setBackground(backgroundColor);
         body.setPreferredSize(new Dimension(1200,530));
+        
+        //load art 
+        this.loadArtLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.loadArtLabel.setPreferredSize(new Dimension(290, 504));
+        body.add(loadArtLabel);
+        
+        JPanel panel = new JPanel(new FlowLayout());
+        panel.setPreferredSize(new Dimension(800,514));
+        panel.setOpaque(false);
+        this.bodyHeaderText.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
+        this.bodyHeaderText.setForeground(Color.WHITE);
+        this.bodyHeaderText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(this.bodyHeaderText);
+        body.add(panel);
+        
         return body;
     }
     private JScrollPane championSelectPanel(){
         JPanel mainPanel = new JPanel(new FlowLayout());
         //mainPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        mainPanel.setBackground(new Color(0,0,0,170));
+        mainPanel.setBackground(backgroundColor);
         for(int i = 0; i < this.champKeyList.size(); i++){
             if(this.champKeyList.get(i) == null){
                 counter++;
@@ -229,6 +249,8 @@ public class RankedStatsPage {
                 @Override
                 public void actionPerformed(ActionEvent e){ //button pressed
                     background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
+                    loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
+                    bodyHeaderText.setText(champKeyList.get(position));
                     masterFrame.revalidate();
                     masterFrame.repaint();
                 }
