@@ -69,6 +69,7 @@ public class RankedStatsPage {
     private final JLabel titleHeader = new JLabel();
     private final Color backgroundColor = new Color(0,0,0,215);
     private ArrayList<Integer> champIdList = new ArrayList<>();
+    private JLabel statsTotalValues = new JLabel();
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
         //LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
@@ -198,8 +199,8 @@ public class RankedStatsPage {
                 bottomCenter.setLayout(new BoxLayout(bottomCenter, BoxLayout.X_AXIS));
                 //empty spacer
                 bottomCenter.add(spacers.get(3));
-                //wins
-                JLabel winsLabel = new JLabel("W: " + this.wins + "   L: " + this.losses + "   Win Ratio: " + this.winPercentage + "%");
+                //season
+                JLabel winsLabel = new JLabel(this.season);
                 winsLabel.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
                 winsLabel.setForeground(new Color(219,219,219)); //text color
                 winsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -226,26 +227,57 @@ public class RankedStatsPage {
         this.loadArtLabel.setPreferredSize(new Dimension(290, 504));
         body.add(this.loadArtLabel);
         
-        JPanel panel = new JPanel(new FlowLayout());
-        panel.setPreferredSize(new Dimension(800,514));
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        JPanel rightPanel = new JPanel(new FlowLayout());
+        rightPanel.setPreferredSize(new Dimension(800,514));
+        rightPanel.setOpaque(false);
+        rightPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
-        headerPanel.setPreferredSize(new Dimension(800, 45));
+        headerPanel.setPreferredSize(new Dimension(910, 55));
         headerPanel.setOpaque(false);
-        headerPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        //headerPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         this.nameHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
         this.nameHeader.setForeground(Color.WHITE);
         this.nameHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.nameHeader.setText("Season Totals");
         this.titleHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 16)); //custom font
         this.titleHeader.setForeground(Color.GRAY);
         this.titleHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(this.nameHeader);
-        panel.add(this.titleHeader);
-        body.add(panel);
+        //nameHeader.setAlignmentY(Component.TOP_ALIGNMENT);
+        titleHeader.setAlignmentY(Component.TOP_ALIGNMENT);
+        headerPanel.add(nameHeader);
+        headerPanel.add(titleHeader);
+        rightPanel.add(headerPanel);
+        rightPanel.add(statsPanel());
+        body.add(rightPanel);
         
         return body;
+    }
+    private JPanel statsPanel(){
+        JPanel panel = new JPanel();
+        //panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        panel.setOpaque(false);
+        panel.setLayout(new FlowLayout());
+        panel.setPreferredSize(new Dimension(910, 464));
+            JPanel statsPanelTotals = new JPanel();
+            statsPanelTotals.setLayout(new BoxLayout(statsPanelTotals, BoxLayout.X_AXIS));
+            statsPanelTotals.setOpaque(false);
+            ///statsPanelTotals.setLayout(new BoxLayout(statsPanelTotals, BoxLayout.X_AXIS));
+            //statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.RED));
+            statsPanelTotals.setPreferredSize(new Dimension(910, 45));
+            statsTotalValues.setText("W: " + this.wins + "     L: " + this.losses + "     Win Ratio: " + this.winPercentage + "%");
+            statsTotalValues.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 16)); //custom font
+            statsTotalValues.setForeground(Color.WHITE);
+            statsTotalValues.setAlignmentX(Component.LEFT_ALIGNMENT);
+            statsPanelTotals.add(statsTotalValues);
+            JPanel lifePerGame = new JPanel();
+            lifePerGame.setOpaque(false);
+            //lifePerGame.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            lifePerGame.setPreferredSize(new Dimension(910, 405));
+            panel.add(statsPanelTotals);
+            panel.add(lifePerGame);
+        return panel;
     }
     private void setChampIdList(){
         for(int i = 0; i < this.objChampRankedList.size(); i++){
@@ -279,7 +311,20 @@ public class RankedStatsPage {
                     background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
                     loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
                     nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
-                    titleHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
+                    titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
+                    String sessionsWon = "";
+                    String sessionsLost = "";
+                    String winPercentString = "";
+                    try {
+                        int won = objChampRankedList.get(position).getJSONObject("stats").getInt("totalSessionsWon");
+                        sessionsWon = Integer.toString(won);
+                        int lost = objChampRankedList.get(position).getJSONObject("stats").getInt("totalSessionsLost");
+                        sessionsLost = Integer.toString(lost);
+                        winPercentString = getWinPercentage(won, lost);
+                    } catch (JSONException ex) {
+                        Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    statsTotalValues.setText("W: " + sessionsWon + "     L: " + sessionsLost + "     Win Ratio: " + winPercentString + "%");
                     masterFrame.revalidate();
                     masterFrame.repaint();
                 }
