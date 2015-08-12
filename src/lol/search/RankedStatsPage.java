@@ -17,6 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractButton;
@@ -76,6 +80,7 @@ public class RankedStatsPage {
     private JLabel totalLosses = new JLabel();
     private JLabel winPercentLabel = new JLabel();
     private JLabel winPercent = new JLabel();
+    private Map<Integer, String> treeMap;
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
         //LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
@@ -97,6 +102,7 @@ public class RankedStatsPage {
         rankedStatsClassOperations(this.version, this.summonerId, this.region, this.season);
         setChampIdList();
         this.winPercentage = getWinPercentage(this.wins, this.losses);
+        treeMap = sortMap();
         //this.objRankedStats.printValues(); //print values carried over to the ranked stats class
         //printCarriedValues();
         //set the background of the frame
@@ -436,5 +442,35 @@ public class RankedStatsPage {
         double winPer = (double)(w)/((double)(w)+(double)(l));
         winPer = winPer*100;
         return new DecimalFormat("##.##").format(winPer); //return formatted string of win percentage.
+    }
+    
+    private Map<Integer, String> sortMap(){
+        Map<Integer, String> unsortMap = new HashMap<Integer, String>();
+        for(int i = 0; i < objChampRankedList.size(); i++){
+            try {
+                unsortMap.put(objChampRankedList.get(i).getJSONObject("stats").getInt("totalSessionsPlayed"), champKeyList.get(i));
+            } catch (JSONException ex) {
+                Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println("Unsort Map...");
+        printMap(unsortMap);
+        System.out.println("\nSorted Map...");
+        Map<Integer, String> treeMap = new TreeMap<Integer, String>(
+            new Comparator<Integer>(){
+                @Override
+                public int compare(Integer o1, Integer o2){
+                    return o2.compareTo(o1);
+                }
+        });
+        treeMap.putAll(unsortMap);
+        printMap(treeMap);
+        return treeMap;
+    }
+    private void printMap(Map<Integer,String> map){
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+			System.out.println("Key : " + entry.getKey() 
+                                      + " Value : " + entry.getValue());
+		}
     }
 }
