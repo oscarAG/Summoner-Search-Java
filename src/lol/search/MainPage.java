@@ -175,7 +175,7 @@ public class MainPage implements ActionListener{
         this.summonerTextField.setBackground(Color.LIGHT_GRAY);
         this.summonerTextField.setHorizontalAlignment(SwingConstants.CENTER);
         this.summonerTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //this.summonerTextField.setText("Osxander");
+        this.summonerTextField.setText("Osxander");
         this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
         this.summonerTextField.setPreferredSize(new Dimension(222,30));
         this.summonerTextField.addActionListener(this);

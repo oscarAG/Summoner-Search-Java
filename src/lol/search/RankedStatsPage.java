@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +81,9 @@ public class RankedStatsPage {
     private JLabel totalLosses = new JLabel();
     private JLabel winPercentLabel = new JLabel();
     private JLabel winPercent = new JLabel();
+    private JLabel totalGames = new JLabel();
+    private JLabel totalGamesPlayed = new JLabel();
+    private int totalGamesInt;
     private Map<Integer, String> treeMap;
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
@@ -98,11 +102,15 @@ public class RankedStatsPage {
         this.division = this.OBJ_LEAGUE_BYID.getDivision();
         this.wins = this.OBJ_LEAGUE_BYID.getWins();
         this.losses = this.OBJ_LEAGUE_BYID.getLosses();
+        this.totalGamesInt = wins+losses;
         setSeason("SEASON2015");
         rankedStatsClassOperations(this.version, this.summonerId, this.region, this.season);
-        setChampIdList();
         this.winPercentage = getWinPercentage(this.wins, this.losses);
-        treeMap = sortMap();
+        sort(); //sorts the rankedJSONObject lists
+        setChampIdList();
+        setChampKeyList();
+        //System.out.println(champIdList);
+        //System.out.println(champKeyList);
         //this.objRankedStats.printValues(); //print values carried over to the ranked stats class
         //printCarriedValues();
         //set the background of the frame
@@ -273,36 +281,74 @@ public class RankedStatsPage {
     }
     private JPanel statsPanel(){
         JPanel panel = new JPanel();
-        //panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         panel.setOpaque(false);
         panel.setLayout(new FlowLayout());
         panel.setPreferredSize(new Dimension(910, 464));
             JPanel statsPanelTotals = new JPanel();
             statsPanelTotals.setLayout(new BoxLayout(statsPanelTotals, BoxLayout.X_AXIS));
             statsPanelTotals.setOpaque(false);
-            ///statsPanelTotals.setLayout(new BoxLayout(statsPanelTotals, BoxLayout.X_AXIS));
-            //statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.RED));
+            ///statsPanelTotals.setLayout(new GridLayout());
+            statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.RED));
             //totals
             statsPanelTotals.setPreferredSize(new Dimension(910, 45));
-            totalJLabel(winsLabel, "   W: ", Color.WHITE);
-            winsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            totalJLabel(totalWins, ""+this.wins, new Color(255,153,51));
-            totalJLabel(lossesLabel, "   L: ", Color.WHITE);
-            totalJLabel(totalLosses,"" + this.losses, new Color(255,153,51));
-            totalJLabel(winPercentLabel, "   Win Ratio: ",Color.WHITE);
-            totalJLabel(winPercent, winPercentage + "%", new Color(255,153,51));
-            statsPanelTotals.add(winsLabel);
-            statsPanelTotals.add(totalWins);
-            statsPanelTotals.add(lossesLabel);
-            statsPanelTotals.add(totalLosses);
-            statsPanelTotals.add(winPercentLabel);
-            statsPanelTotals.add(winPercent);
-            JPanel lifePerGame = new JPanel();
-            lifePerGame.setOpaque(false);
-            //lifePerGame.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-            lifePerGame.setPreferredSize(new Dimension(910, 405));
-            panel.add(statsPanelTotals);
-            panel.add(lifePerGame);
+                totalJLabel(winsLabel, "   W: ", Color.WHITE);
+                winsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                totalJLabel(totalWins, ""+this.wins, new Color(255,153,51));
+                totalJLabel(lossesLabel, "   L: ", Color.WHITE);
+                totalJLabel(totalLosses,"" + this.losses, new Color(255,153,51));
+                totalJLabel(winPercentLabel, "   Win Ratio: ",Color.WHITE);
+                totalJLabel(winPercent, winPercentage + "%", new Color(255,153,51));
+                totalJLabel(totalGames, "   Total Games Played: ", Color.WHITE);
+                totalJLabel(this.totalGamesPlayed, String.valueOf(totalGamesInt), new Color(255,153,51));
+                statsPanelTotals.add(winsLabel);
+                statsPanelTotals.add(totalWins);
+                statsPanelTotals.add(lossesLabel);
+                statsPanelTotals.add(totalLosses);
+                statsPanelTotals.add(winPercentLabel);
+                statsPanelTotals.add(winPercent);
+                statsPanelTotals.add(totalGames);
+                statsPanelTotals.add(totalGamesPlayed);
+            JPanel totalsAndAverages = new JPanel();
+            totalsAndAverages.setOpaque(false);
+            totalsAndAverages.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            totalsAndAverages.setPreferredSize(new Dimension(910, 405));
+            totalsAndAverages.setLayout(new GridLayout());
+                JPanel leftSide = new JPanel();
+                leftSide.setOpaque(false);
+                leftSide.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                    JPanel leftSideHeader = new JPanel();
+                    leftSideHeader.setOpaque(false);
+                    leftSideHeader.setLayout(new BoxLayout(leftSideHeader, BoxLayout.X_AXIS));
+                    leftSideHeader.setPreferredSize(new Dimension(455, 45));
+                    leftSideHeader.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+                    JPanel leftSideBody = new JPanel();
+                    leftSideBody.setOpaque(false);
+                    leftSideBody.setLayout(new BoxLayout(leftSideBody, BoxLayout.X_AXIS));
+                    leftSideBody.setPreferredSize(new Dimension(455, 360));
+                    leftSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                leftSide.add(leftSideHeader);
+                leftSide.add(leftSideBody);
+                JPanel rightSide = new JPanel();
+                /**/
+                rightSide.setOpaque(false);
+                rightSide.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+                    JPanel rightSideHeader = new JPanel();
+                    rightSideHeader.setOpaque(false);
+                    rightSideHeader.setLayout(new BoxLayout(rightSideHeader, BoxLayout.X_AXIS));
+                    rightSideHeader.setPreferredSize(new Dimension(455, 45));
+                    rightSideHeader.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+                    JPanel rightSideBody = new JPanel();
+                    rightSideBody.setOpaque(false);
+                    rightSideBody.setLayout(new BoxLayout(rightSideBody, BoxLayout.X_AXIS));
+                    rightSideBody.setPreferredSize(new Dimension(455, 360));
+                    rightSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                rightSide.add(rightSideHeader);
+                rightSide.add(rightSideBody);
+            totalsAndAverages.add(leftSide);
+            totalsAndAverages.add(rightSide);
+        panel.add(statsPanelTotals);
+        panel.add(totalsAndAverages);
         return panel;
     }
     private void totalJLabel(JLabel label, String text, Color color){
@@ -318,20 +364,16 @@ public class RankedStatsPage {
                 Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+        objChampRankedList.remove(0); //removes the overall element
         //this.objChampRankedList
     }
     private JScrollPane championSelectPanel(){
         JPanel mainPanel = new JPanel(new FlowLayout());
         //mainPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         mainPanel.setBackground(backgroundColor);
-        for(int i = 0; i < this.champKeyList.size(); i++){
-            if(this.champKeyList.get(i) == null){
-                counter++;
-                continue;
-            }
+        for(int i = 0; i < this.objChampRankedList.size(); i++){
             int position = counter;
-            ImageIcon champImageIcon = this.OBJ_RANKED_STATS_BY_ID.getChampionIconOf(this.champKeyList.get(i));
+            ImageIcon champImageIcon = this.OBJ_RANKED_STATS_BY_ID.getChampionIconOf(this.champKeyList.get(i+1));
             JButton champButton = new JButton();
             champButton.setIcon(champImageIcon);
             champButton.setPreferredSize(new Dimension(55,55));
@@ -339,10 +381,10 @@ public class RankedStatsPage {
             champButton.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){ //button pressed
-                    background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
-                    loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
-                    nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
-                    titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
+                    background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position+1)));
+                    loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position+1)));
+                    nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position+1)));
+                    titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position+1)));
                     String sessionsWon = "";
                     String sessionsLost = "";
                     String winPercentString = "";
@@ -352,12 +394,14 @@ public class RankedStatsPage {
                         int lost = objChampRankedList.get(position).getJSONObject("stats").getInt("totalSessionsLost");
                         sessionsLost = Integer.toString(lost);
                         winPercentString = getWinPercentage(won, lost);
+                        totalGamesInt = won+lost;
                     } catch (JSONException ex) {
                         Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     totalWins.setText(sessionsWon);
                     totalLosses.setText(sessionsLost);
                     winPercent.setText(winPercentString + "%");
+                    totalGamesPlayed.setText(String.valueOf(totalGamesInt));
                     masterFrame.revalidate();
                     masterFrame.repaint();
                 }
@@ -431,7 +475,13 @@ public class RankedStatsPage {
     private void rankedStatsClassOperations(String version, long id, String region, String season){
         this.OBJ_RANKED_STATS_BY_ID = new RankedStatsById(version, id, region, season);
         this.objChampRankedList = this.OBJ_RANKED_STATS_BY_ID.getObjChampRankedList(); //has the json objects of the champions ranked stats
-        this.champKeyList = this.OBJ_RANKED_STATS_BY_ID.getRankedChampKeyList(); //gets the string keys of the champions
+        //this.champKeyList = this.OBJ_RANKED_STATS_BY_ID.getRankedChampKeyList(); //gets the string keys of the champions
+    }
+    
+    private void setChampKeyList(){
+        for(int i = 0; i < champIdList.size();i++){
+            champKeyList.add(this.OBJ_ALL_CHAMPS_BY_ID.getChampKeyFromId(champIdList.get(i)));
+        }
     }
     /*set the season by which to retrieve ranked information from, for now it is 2015 by default*/
     private void setSeason(String season){
@@ -444,33 +494,32 @@ public class RankedStatsPage {
         return new DecimalFormat("##.##").format(winPer); //return formatted string of win percentage.
     }
     
-    private Map<Integer, String> sortMap(){
-        Map<Integer, String> unsortMap = new HashMap<Integer, String>();
+    private void sort(){
+        int count = 0;
+        int max = 0;
+        int maxPosition = 0;
+        
         for(int i = 0; i < objChampRankedList.size(); i++){
-            try {
-                unsortMap.put(objChampRankedList.get(i).getJSONObject("stats").getInt("totalSessionsPlayed"), champKeyList.get(i));
-            } catch (JSONException ex) {
-                Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        System.out.println("Unsort Map...");
-        printMap(unsortMap);
-        System.out.println("\nSorted Map...");
-        Map<Integer, String> treeMap = new TreeMap<Integer, String>(
-            new Comparator<Integer>(){
-                @Override
-                public int compare(Integer o1, Integer o2){
-                    return o2.compareTo(o1);
+            for(int j = count; j < objChampRankedList.size(); j++){
+                try {
+                    if(this.objChampRankedList.get(j).getJSONObject("stats").getInt("totalSessionsPlayed") > max){
+                        max = this.objChampRankedList.get(j).getJSONObject("stats").getInt("totalSessionsPlayed");
+                        maxPosition = j;
+                    }
+                } catch (JSONException ex) {
+                    Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                 }
-        });
-        treeMap.putAll(unsortMap);
-        printMap(treeMap);
-        return treeMap;
-    }
-    private void printMap(Map<Integer,String> map){
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-			System.out.println("Key : " + entry.getKey() 
-                                      + " Value : " + entry.getValue());
-		}
+            }
+            Collections.swap(objChampRankedList, maxPosition, i);
+            max = 0;
+            maxPosition=0;
+            count++;
+        }
+        //objChampRankedList.remove(objChampRankedList.get(0)); //removes the overall element
+        /*
+        for(int i = 0; i < objChampRankedList.size(); i++){
+            System.out.println(objChampRankedList.get(i));
+        }
+        */
     }
 }
