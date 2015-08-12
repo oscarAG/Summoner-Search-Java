@@ -109,7 +109,24 @@ public class GameStaticData {
         }
         return image;
     }
-    
+    //return artwork for background of initial stats frame
+    public ImageIcon getStatsBackground(){
+        ImageIcon temp = new ImageIcon();
+        File f = new File("assets\\other\\" + "statsBackground" + ".jpg");
+        if(f.isFile()){ //check if picture exists
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\other\\" + "statsBackground"+ ".jpg"));
+                temp = new ImageIcon(c);
+                //resize
+                Image image = temp.getImage();
+                Image newImg = image.getScaledInstance(1215, 717,Image.SCALE_SMOOTH);
+                temp = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return temp;
+    }
     /*Return Image icon with the KDA icon*/
     public ImageIcon getScoreboardIconOf(String iconString){
         String tempString = iconString;

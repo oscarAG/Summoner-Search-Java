@@ -236,7 +236,7 @@ public class RankedStatsPage {
         JPanel rightPanel = new JPanel(new FlowLayout());
         rightPanel.setPreferredSize(new Dimension(800,514));
         rightPanel.setOpaque(false);
-        rightPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        //rightPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
@@ -246,7 +246,7 @@ public class RankedStatsPage {
         this.defaultHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
         this.defaultHeader.setForeground(Color.WHITE);
         this.defaultHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
-        this.defaultHeader.setText("Season Totals: ");
+        this.defaultHeader.setText(" Season Totals: ");
         this.nameHeader.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 40)); //custom font
         this.nameHeader.setForeground(new Color(255,153,51));
         this.nameHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -278,7 +278,7 @@ public class RankedStatsPage {
             //statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.RED));
             //totals
             statsPanelTotals.setPreferredSize(new Dimension(910, 45));
-            totalJLabel(winsLabel, "W: ", Color.WHITE);
+            totalJLabel(winsLabel, "   W: ", Color.WHITE);
             winsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             totalJLabel(totalWins, ""+this.wins, new Color(255,153,51));
             totalJLabel(lossesLabel, "   L: ", Color.WHITE);
@@ -401,7 +401,7 @@ public class RankedStatsPage {
     /*get/set background*/
     private JLabel getBackground(){ 
         this.background = new JLabel();
-        background.setIcon(this.OBJ_GAME_STATIC_DATA.getBackgroundImageIcon());
+        background.setIcon(this.OBJ_GAME_STATIC_DATA.getStatsBackground());
         background.setLayout(new GridLayout());
         background.add(mainPanel());
         return background;
