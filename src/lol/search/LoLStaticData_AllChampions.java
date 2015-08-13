@@ -63,7 +63,7 @@ public class LoLStaticData_AllChampions {
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
-            System.out.println(jsonResponse);
+            //System.out.println(jsonResponse);
             parseJSONResponse(jsonResponse); //parse the json response into usable values
             
         } catch (MalformedURLException ex) {

@@ -149,7 +149,7 @@ public class MatchHistoryPage {
                         masterFrame.getContentPane().removeAll();
                         masterFrame.revalidate();
                         masterFrame.repaint();
-                        MainPage MAIN_PAGE = new MainPage(masterFrame);
+                        MainPage MAIN_PAGE = new MainPage(masterFrame, summonerName);
                     }
                 });
                 buttonHolder.add(backButton);

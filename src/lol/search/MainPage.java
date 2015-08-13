@@ -59,8 +59,9 @@ public class MainPage implements ActionListener{
     private String regionCodeValue; //region code of region selected
     private String version;
     
-    public MainPage(JFrame mainFrame){ //arg constructor
+    public MainPage(JFrame mainFrame, String name){ //arg constructor
         System.out.println("Loading page...");
+        nameInput = name;
         frameTimer = new Timer();
         frameTimer.schedule(new TimerTask(){
             @Override
@@ -175,7 +176,7 @@ public class MainPage implements ActionListener{
         this.summonerTextField.setBackground(Color.LIGHT_GRAY);
         this.summonerTextField.setHorizontalAlignment(SwingConstants.CENTER);
         this.summonerTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.summonerTextField.setText("Osxander");
+        this.summonerTextField.setText(nameInput);
         this.summonerTextField.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 14)); //custom font
         this.summonerTextField.setPreferredSize(new Dimension(222,30));
         this.summonerTextField.addActionListener(this);

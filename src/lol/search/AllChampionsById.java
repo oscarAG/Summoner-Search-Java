@@ -69,7 +69,11 @@ public class AllChampionsById {
     
     public String getChampNameFromId(int id){
         String name = null;
-        Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
+        if(id == 0){
+            name = "Overall";
+        }
+        else{
+            Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
             while(keys.hasNext()){ //operations per instance of each champion object
                 try {
                     String key = (String)keys.next();
@@ -80,17 +84,21 @@ public class AllChampionsById {
                             name = champObject.getString("name");
                             break;
                         }
-                        
                     }
                 } catch (JSONException ex) {
                     Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
                 } 
             }
+        }
         return name;
     }
     public String getChampTitleFromId(int id){
         String title = null;
-        Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
+        if(id == 0){
+            title = "";
+        }
+        else{
+            Iterator<?> keys = allChampionsObject.keys(); //iterator to traverse through entire champion list
             while(keys.hasNext()){ //operations per instance of each champion object
                 try {
                     String key = (String)keys.next();
@@ -107,6 +115,7 @@ public class AllChampionsById {
                     Logger.getLogger(LoLStaticData_AllChampions.class.getName()).log(Level.SEVERE, null, ex);
                 } 
             }
+        }
         return title;
     }
     

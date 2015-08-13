@@ -93,20 +93,47 @@ public class GameStaticData {
     /*Return ImageIcon with chosen champion artwork*/
     public ImageIcon getBackgroundImageIcon(String key){
         ImageIcon image = null;
-        
-        //URL
-        try {
-            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+key+"_0.jpg");
-            //Get image
-            BufferedImage c = ImageIO.read(url);
-            image = new ImageIcon(c);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ProtocolException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+        File f = new File("assets\\other\\" + key + ".png");
+        if(f.isFile()){ //check if picture exists
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\other\\" + key + ".png"));
+                image = new ImageIcon(c);
+                //resize
+                Image imageImg = image.getImage();
+                Image newImg = imageImg.getScaledInstance(1215, 717,Image.SCALE_SMOOTH);
+                image = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        else if(key == null){
+            try {
+                BufferedImage c = ImageIO.read(new File("assets\\other\\" + "statsBackground" + ".jpg"));
+                image = new ImageIcon(c);
+                //resize
+                Image imageImg = image.getImage();
+                Image newImg = imageImg.getScaledInstance(1215, 717,Image.SCALE_SMOOTH);
+                image = new ImageIcon(newImg);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        //URL
+        else{
+            try {
+                URL url = new URL("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+key+"_0.jpg");
+                //Get image
+                BufferedImage c = ImageIO.read(url);
+                image = new ImageIcon(c);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ProtocolException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         return image;
     }
     //return artwork for background of initial stats frame

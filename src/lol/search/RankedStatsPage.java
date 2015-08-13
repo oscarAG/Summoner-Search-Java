@@ -168,7 +168,7 @@ public class RankedStatsPage {
                         masterFrame.getContentPane().removeAll();
                         masterFrame.revalidate();
                         masterFrame.repaint();
-                        MainPage MAIN_PAGE = new MainPage(masterFrame);
+                        MainPage MAIN_PAGE = new MainPage(masterFrame, summonerName);
                     }
                 });
                 buttonHolder.add(backButton);
@@ -252,6 +252,7 @@ public class RankedStatsPage {
         //load art 
         this.loadArtLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         this.loadArtLabel.setPreferredSize(new Dimension(290, 504));
+        this.loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(0)));
         body.add(this.loadArtLabel);
         
         JPanel rightPanel = new JPanel(new FlowLayout());
@@ -332,21 +333,49 @@ public class RankedStatsPage {
                         leftSideHeader.add(this.leftSideHeaderLabel);
                     JPanel leftSideBody = new JPanel();
                     leftSideBody.setOpaque(false);
-                    leftSideBody.setLayout(new BoxLayout(leftSideBody, BoxLayout.X_AXIS));
+                    leftSideBody.setLayout(new BoxLayout(leftSideBody, BoxLayout.Y_AXIS));
                     leftSideBody.setPreferredSize(new Dimension(455, 360));
                     //leftSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                        JPanel avgKillsPanel = new JPanel();
+                            avgKillsPanel.setOpaque(false);
+                            //avgKillsPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+                        JPanel avgDeathsPanel = new JPanel();
+                            avgDeathsPanel.setOpaque(false);
+                        JPanel avgAssistsPanel = new JPanel();
+                            avgAssistsPanel.setOpaque(false);
                         totalJLabel(this.avgKillsLabel, "   Avg. Kills: ", Color.WHITE);
-                        leftSideBody.add(this.avgKillsLabel);
+                        totalJLabel(this.avgDeathsLabel, "   Avg. Deaths: ",Color.WHITE);
+                        totalJLabel(this.avgAssistsLabel, "   Avg. Assists: ", Color.WHITE);
+                        double avgKills = 99999;
+                        double avgAssists = 99999;
+                        double avgDeaths = 99999;
                         try {
+                            double totalGamesPlayed = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalSessionsPlayed");
+                            //operations
                             double totalKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalChampionKills");
-                            double totalGamesPLayed = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalSessionsPlayed");
-                            double avgKills = totalKills/totalGamesPLayed;
-                            String avgKillsString =new DecimalFormat("##.##").format(avgKills);
-                            totalJLabel(this.avgKillsLabelValue, avgKillsString, new Color(255,153,51));
+                            avgKills = totalKills/totalGamesPlayed;
+                            double totalDeaths = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalDeathsPerSession");
+                            avgDeaths = totalDeaths/totalGamesPlayed;
+                            double totalAssists = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalAssists");
+                            avgAssists = totalAssists/totalGamesPlayed;
                         } catch (JSONException ex) {
                             Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        leftSideBody.add(this.avgKillsLabelValue);
+                        String avgKillsString =new DecimalFormat("##.##").format(avgKills);
+                        String avgDeathsString = new DecimalFormat("##.##").format(avgDeaths);
+                        String avgAssistsString = new DecimalFormat("##.##").format(avgAssists);
+                        totalJLabel(this.avgKillsLabelValue, avgKillsString, new Color(255,153,51));
+                        totalJLabel(this.avgDeathsLabelValue, avgDeathsString, new Color(255,153,51));
+                        totalJLabel(this.avgAssistsLabelValue, avgAssistsString, new Color(255,153,51));
+                        avgKillsPanel.add(avgKillsLabel);
+                        avgKillsPanel.add(avgKillsLabelValue);
+                        avgDeathsPanel.add(avgDeathsLabel);
+                        avgDeathsPanel.add(avgDeathsLabelValue);
+                        avgAssistsPanel.add(avgAssistsLabel);
+                        avgAssistsPanel.add(avgAssistsLabelValue);
+                        leftSideBody.add(avgKillsPanel);
+                        leftSideBody.add(avgDeathsPanel);
+                        leftSideBody.add(avgAssistsPanel);
                 leftSide.add(leftSideHeader);
                 leftSide.add(leftSideBody);
                 JPanel rightSide = new JPanel();
@@ -398,6 +427,10 @@ public class RankedStatsPage {
             ImageIcon champImageIcon = this.OBJ_RANKED_STATS_BY_ID.getChampionIconOf(this.champKeyList.get(i));
             JButton champButton = new JButton();
             champButton.setIcon(champImageIcon);
+            if(i == 0){
+                champButton.setIcon(this.profileIcon);
+                champButton.setToolTipText("Overall Stats");
+            }
             champButton.setPreferredSize(new Dimension(55,55));
             champButton.setBackground(Color.BLACK);
             champButton.addActionListener(new ActionListener(){
@@ -406,6 +439,7 @@ public class RankedStatsPage {
                     background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
                     loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
                     nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
+                    
                     titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
                     String sessionsWon = "";
                     String sessionsLost = "";
@@ -418,7 +452,12 @@ public class RankedStatsPage {
                         sessionsLost = Integer.toString(lost);
                         winPercentString = getWinPercentage(won, lost);
                         totalGamesInt = won+lost;
-                        
+                        avgKillsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalChampionKills")/(double)totalGamesInt));
+                        avgAssistsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalAssists")/(double)totalGamesInt));
+                        avgDeathsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalDeathsPerSession")/(double)totalGamesInt));
                     } catch (JSONException ex) {
                         Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -430,6 +469,7 @@ public class RankedStatsPage {
                     masterFrame.repaint();
                 }
             });
+            champButton.setToolTipText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
             champButtons.add(champButton);
             //champButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             counter++;
@@ -544,6 +584,7 @@ public class RankedStatsPage {
         for(int i = 0; i < objChampRankedList.size(); i++){
             System.out.println(objChampRankedList.get(i));
         }
+        
         
     }
 }
