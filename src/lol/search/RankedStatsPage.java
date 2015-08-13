@@ -84,7 +84,14 @@ public class RankedStatsPage {
     private JLabel totalGames = new JLabel();
     private JLabel totalGamesPlayed = new JLabel();
     private int totalGamesInt;
-    private Map<Integer, String> treeMap;
+    private JLabel leftSideHeaderLabel = new JLabel();
+    private JLabel rightSideHeaderLabel = new JLabel();
+    private JLabel avgKillsLabel = new JLabel();
+    private JLabel avgKillsLabelValue = new JLabel();
+    private JLabel avgDeathsLabel = new JLabel();
+    private JLabel avgDeathsLabelValue = new JLabel();
+    private JLabel avgAssistsLabel = new JLabel();
+    private JLabel avgAssistsLabelValue = new JLabel();
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
         //LoLStaticData_AllChampions DATA_ALL_CHAMPIONS = new LoLStaticData_AllChampions(GAME_BY_ID.getChampionIdList(), regionCodeValue, version); //get data for all champions from endpoint
@@ -281,15 +288,14 @@ public class RankedStatsPage {
     }
     private JPanel statsPanel(){
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         panel.setOpaque(false);
         panel.setLayout(new FlowLayout());
         panel.setPreferredSize(new Dimension(910, 464));
             JPanel statsPanelTotals = new JPanel();
             statsPanelTotals.setLayout(new BoxLayout(statsPanelTotals, BoxLayout.X_AXIS));
             statsPanelTotals.setOpaque(false);
-            ///statsPanelTotals.setLayout(new GridLayout());
-            statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.RED));
+            //statsPanelTotals.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             //totals
             statsPanelTotals.setPreferredSize(new Dimension(910, 45));
                 totalJLabel(winsLabel, "   W: ", Color.WHITE);
@@ -311,38 +317,54 @@ public class RankedStatsPage {
                 statsPanelTotals.add(totalGamesPlayed);
             JPanel totalsAndAverages = new JPanel();
             totalsAndAverages.setOpaque(false);
-            totalsAndAverages.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            totalsAndAverages.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             totalsAndAverages.setPreferredSize(new Dimension(910, 405));
             totalsAndAverages.setLayout(new GridLayout());
                 JPanel leftSide = new JPanel();
                 leftSide.setOpaque(false);
-                leftSide.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                leftSide.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
                     JPanel leftSideHeader = new JPanel();
                     leftSideHeader.setOpaque(false);
-                    leftSideHeader.setLayout(new BoxLayout(leftSideHeader, BoxLayout.X_AXIS));
-                    leftSideHeader.setPreferredSize(new Dimension(455, 45));
-                    leftSideHeader.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+                    leftSideHeader.setLayout(new FlowLayout());
+                    leftSideHeader.setPreferredSize(new Dimension(455, 35));
+                    //leftSideHeader.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+                        totalJLabel(this.leftSideHeaderLabel, "   Per Game Averages:", Color.WHITE);
+                        leftSideHeader.add(this.leftSideHeaderLabel);
                     JPanel leftSideBody = new JPanel();
                     leftSideBody.setOpaque(false);
                     leftSideBody.setLayout(new BoxLayout(leftSideBody, BoxLayout.X_AXIS));
                     leftSideBody.setPreferredSize(new Dimension(455, 360));
-                    leftSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    //leftSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                        totalJLabel(this.avgKillsLabel, "   Avg. Kills: ", Color.WHITE);
+                        leftSideBody.add(this.avgKillsLabel);
+                        try {
+                            double totalKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalChampionKills");
+                            double totalGamesPLayed = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalSessionsPlayed");
+                            double avgKills = totalKills/totalGamesPLayed;
+                            String avgKillsString =new DecimalFormat("##.##").format(avgKills);
+                            totalJLabel(this.avgKillsLabelValue, avgKillsString, new Color(255,153,51));
+                        } catch (JSONException ex) {
+                            Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        leftSideBody.add(this.avgKillsLabelValue);
                 leftSide.add(leftSideHeader);
                 leftSide.add(leftSideBody);
                 JPanel rightSide = new JPanel();
                 /**/
                 rightSide.setOpaque(false);
-                rightSide.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+                rightSide.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
                     JPanel rightSideHeader = new JPanel();
                     rightSideHeader.setOpaque(false);
-                    rightSideHeader.setLayout(new BoxLayout(rightSideHeader, BoxLayout.X_AXIS));
-                    rightSideHeader.setPreferredSize(new Dimension(455, 45));
-                    rightSideHeader.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+                    rightSideHeader.setLayout(new FlowLayout());
+                    rightSideHeader.setPreferredSize(new Dimension(455, 35));
+                    //rightSideHeader.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+                        totalJLabel(this.rightSideHeaderLabel, "   Lifetime Totals:", Color.WHITE);
+                        rightSideHeader.add(this.rightSideHeaderLabel);
                     JPanel rightSideBody = new JPanel();
                     rightSideBody.setOpaque(false);
                     rightSideBody.setLayout(new BoxLayout(rightSideBody, BoxLayout.X_AXIS));
                     rightSideBody.setPreferredSize(new Dimension(455, 360));
-                    rightSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    //rightSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
                 rightSide.add(rightSideHeader);
                 rightSide.add(rightSideBody);
             totalsAndAverages.add(leftSide);
@@ -364,7 +386,7 @@ public class RankedStatsPage {
                 Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        objChampRankedList.remove(0); //removes the overall element
+        //objChampRankedList.remove(0); //removes the overall element
         //this.objChampRankedList
     }
     private JScrollPane championSelectPanel(){
@@ -373,7 +395,7 @@ public class RankedStatsPage {
         mainPanel.setBackground(backgroundColor);
         for(int i = 0; i < this.objChampRankedList.size(); i++){
             int position = counter;
-            ImageIcon champImageIcon = this.OBJ_RANKED_STATS_BY_ID.getChampionIconOf(this.champKeyList.get(i+1));
+            ImageIcon champImageIcon = this.OBJ_RANKED_STATS_BY_ID.getChampionIconOf(this.champKeyList.get(i));
             JButton champButton = new JButton();
             champButton.setIcon(champImageIcon);
             champButton.setPreferredSize(new Dimension(55,55));
@@ -381,20 +403,22 @@ public class RankedStatsPage {
             champButton.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){ //button pressed
-                    background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position+1)));
-                    loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position+1)));
-                    nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position+1)));
-                    titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position+1)));
+                    background.setIcon(OBJ_GAME_STATIC_DATA.getBackgroundImageIcon(champKeyList.get(position)));
+                    loadArtLabel.setIcon(OBJ_GAME_STATIC_DATA.initLoadingArt(champKeyList.get(position)));
+                    nameHeader.setText(OBJ_ALL_CHAMPS_BY_ID.getChampNameFromId(champIdList.get(position)));
+                    titleHeader.setText(" " + OBJ_ALL_CHAMPS_BY_ID.getChampTitleFromId(champIdList.get(position)));
                     String sessionsWon = "";
                     String sessionsLost = "";
                     String winPercentString = "";
                     try {
+                        //doesnt work
                         int won = objChampRankedList.get(position).getJSONObject("stats").getInt("totalSessionsWon");
                         sessionsWon = Integer.toString(won);
                         int lost = objChampRankedList.get(position).getJSONObject("stats").getInt("totalSessionsLost");
                         sessionsLost = Integer.toString(lost);
                         winPercentString = getWinPercentage(won, lost);
                         totalGamesInt = won+lost;
+                        
                     } catch (JSONException ex) {
                         Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -516,10 +540,10 @@ public class RankedStatsPage {
             count++;
         }
         //objChampRankedList.remove(objChampRankedList.get(0)); //removes the overall element
-        /*
+        
         for(int i = 0; i < objChampRankedList.size(); i++){
             System.out.println(objChampRankedList.get(i));
         }
-        */
+        
     }
 }
