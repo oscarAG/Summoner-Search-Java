@@ -763,11 +763,11 @@ public class RankedStatsPage {
             maxPosition=0;
             count++;
         }
-        
+        /*
         for(int i = 0; i < objChampRankedList.size(); i++){
             System.out.println(objChampRankedList.get(i));
         }
-        
+        */
         
     }
 }
