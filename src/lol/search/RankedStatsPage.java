@@ -18,10 +18,6 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractButton;
@@ -87,6 +83,7 @@ public class RankedStatsPage {
     private int totalGamesInt;
     private final JLabel leftSideHeaderLabel = new JLabel();
     private final JLabel rightSideHeaderLabel = new JLabel();
+    //averages
     private final JLabel avgKillsLabel = new JLabel();
     private final JLabel avgKillsLabelValue = new JLabel();
     private final JLabel avgDeathsLabel = new JLabel();
@@ -95,6 +92,15 @@ public class RankedStatsPage {
     private final JLabel avgAssistsLabelValue = new JLabel();
     private final JLabel avgMinionKillsLabel = new JLabel();
     private final JLabel avgMinionKillsLabelValue = new JLabel();
+    private final JLabel avgDoubleKillsLabel = new JLabel();
+    private final JLabel avgDoubleKillsLabelValue = new JLabel();
+    private final JLabel avgTripleKillsLabel = new JLabel();
+    private final JLabel avgTripleKillsLabelValue = new JLabel();
+    private final JLabel avgQuadKillsLabel = new JLabel();
+    private final JLabel avgQuadKillsLabelValue = new JLabel();
+    private final JLabel avgPentaKillsLabel = new JLabel();
+    private final JLabel avgPentaKillsLabelValue = new JLabel();
+    //totals
     private final JLabel totalKillsLabel = new JLabel();
     private final JLabel totalKillsLabelValue = new JLabel();
     private final JLabel totalDeathsLabel = new JLabel();
@@ -103,6 +109,14 @@ public class RankedStatsPage {
     private final JLabel totalAssistsLabelValue = new JLabel();
     private final JLabel totalMinionsLabel = new JLabel();
     private final JLabel totalMinionsLabelValue = new JLabel();
+    private final JLabel totalDoubleKillsLabel = new JLabel();
+    private final JLabel totalDoubleKillsLabelValue = new JLabel();
+    private final JLabel totalTripleKillsLabel = new JLabel();
+    private final JLabel totalTripleKillsLabelValue = new JLabel();
+    private final JLabel totalQuadKillsLabel = new JLabel();
+    private final JLabel totalQuadKillsLabelValue = new JLabel();
+    private final JLabel totalPentaKillsLabel = new JLabel();
+    private final JLabel totalPentaKillsLabelValue = new JLabel();
     
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
         this.OBJ_GAME_STATIC_DATA = new GameStaticData();
@@ -355,18 +369,38 @@ public class RankedStatsPage {
                             avgAssistsPanel.setOpaque(false);
                         JPanel avgMinionsPanel = new JPanel();
                             avgMinionsPanel.setOpaque(false);
+                        JPanel avgDoubleKillsPanel = new JPanel();
+                            avgDoubleKillsPanel.setOpaque(false);
+                        JPanel avgTripleKillsPanel = new JPanel();
+                            avgTripleKillsPanel.setOpaque(false);
+                        JPanel avgQuadKillsPanel = new JPanel();
+                            avgQuadKillsPanel.setOpaque(false);
+                        JPanel avgPentaKillsPanel = new JPanel();
+                            avgPentaKillsPanel.setOpaque(false);
                         totalJLabel(this.avgKillsLabel, "   Avg. Kills: ", Color.WHITE);
                         totalJLabel(this.avgDeathsLabel, "   Avg. Deaths: ",Color.WHITE);
                         totalJLabel(this.avgAssistsLabel, "   Avg. Assists: ", Color.WHITE);
-                        totalJLabel(this.avgMinionKillsLabel, "   Avg. Minions Killed: ", Color.WHITE);
+                        totalJLabel(this.avgMinionKillsLabel, "   Avg. Minion Kills: ", Color.WHITE);
+                        totalJLabel(this.avgDoubleKillsLabel, "   Avg. Double Kills: ", Color.WHITE);
+                        totalJLabel(this.avgTripleKillsLabel, "   Avg. Triple Kills: ", Color.WHITE);
+                        totalJLabel(this.avgQuadKillsLabel, "   Avg. Quadra Kills: ", Color.WHITE);
+                        totalJLabel(this.avgPentaKillsLabel, "   Avg. Penta Kills: ", Color.WHITE);
                         double totalKills = 00000;
                         double totalDeaths = 00000;
                         double totalAssists = 00000;
                         double totalMinions = 00000;
+                        double totalDoubleKills = 00000;
+                        double totalTripleKills = 00000;
+                        double totalQuadraKills = 00000;
+                        double totalPentaKills = 00000;
                         double avgKills = 99999;
                         double avgAssists = 99999;
                         double avgDeaths = 99999;
                         double avgMinions = 99999;
+                        double avgDoubleKills = 99999;
+                        double avgTripleKills = 99999;
+                        double avgQuadraKills = 99999;
+                        double avgPentaKills = 99999;
                         try {
                             double totalGamesPlayed = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalSessionsPlayed");
                             //operations
@@ -378,6 +412,14 @@ public class RankedStatsPage {
                             avgAssists = totalAssists/totalGamesPlayed;
                             totalMinions = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalMinionKills");
                             avgMinions = totalMinions/totalGamesPlayed;
+                            totalDoubleKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalDoubleKills");
+                            avgDoubleKills = totalDoubleKills/totalGamesPlayed;
+                            totalTripleKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalTripleKills");
+                            avgTripleKills = totalTripleKills/totalGamesPlayed;
+                            totalQuadraKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalQuadraKills");
+                            avgQuadraKills = totalQuadraKills/totalGamesPlayed;
+                            totalPentaKills = this.objChampRankedList.get(0).getJSONObject("stats").getInt("totalPentaKills");
+                            avgPentaKills = totalPentaKills/totalGamesPlayed;
                         } catch (JSONException ex) {
                             Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -385,10 +427,18 @@ public class RankedStatsPage {
                         String avgDeathsString = new DecimalFormat("##.##").format(avgDeaths);
                         String avgAssistsString = new DecimalFormat("##.##").format(avgAssists);
                         String avgMinionsString = new DecimalFormat("##.##").format(avgMinions);
+                        String avgDoubleKillsString = new DecimalFormat("##.##").format(avgDoubleKills);
+                        String avgTripleKillsString = new DecimalFormat("##.##").format(avgTripleKills);
+                        String avgQuadraKillsString = new DecimalFormat("##.##").format(avgQuadraKills);
+                        String avgPentaKillsString = new DecimalFormat("##.##").format(avgPentaKills);
                         totalJLabel(this.avgKillsLabelValue, avgKillsString, valueOrange);
                         totalJLabel(this.avgDeathsLabelValue, avgDeathsString, valueOrange);
                         totalJLabel(this.avgAssistsLabelValue, avgAssistsString, valueOrange);
                         totalJLabel(this.avgMinionKillsLabelValue, avgMinionsString, valueOrange);
+                        totalJLabel(this.avgDoubleKillsLabelValue, avgDoubleKillsString, valueOrange);
+                        totalJLabel(this.avgTripleKillsLabelValue, avgTripleKillsString, valueOrange);
+                        totalJLabel(this.avgQuadKillsLabelValue, avgQuadraKillsString, valueOrange);
+                        totalJLabel(this.avgPentaKillsLabelValue, avgPentaKillsString, valueOrange);
                         avgKillsPanel.add(avgKillsLabel);
                         avgKillsPanel.add(avgKillsLabelValue);
                         avgDeathsPanel.add(avgDeathsLabel);
@@ -397,10 +447,22 @@ public class RankedStatsPage {
                         avgAssistsPanel.add(avgAssistsLabelValue);
                         avgMinionsPanel.add(avgMinionKillsLabel);
                         avgMinionsPanel.add(avgMinionKillsLabelValue);
+                        avgDoubleKillsPanel.add(avgDoubleKillsLabel);
+                        avgDoubleKillsPanel.add(avgDoubleKillsLabelValue);
+                        avgTripleKillsPanel.add(avgTripleKillsLabel);
+                        avgTripleKillsPanel.add(avgTripleKillsLabelValue);
+                        avgQuadKillsPanel.add(avgQuadKillsLabel);
+                        avgQuadKillsPanel.add(avgQuadKillsLabelValue);
+                        avgPentaKillsPanel.add(avgPentaKillsLabel);
+                        avgPentaKillsPanel.add(avgPentaKillsLabelValue);
                         leftSideBody.add(avgKillsPanel);
                         leftSideBody.add(avgDeathsPanel);
                         leftSideBody.add(avgAssistsPanel);
                         leftSideBody.add(avgMinionsPanel);
+                        leftSideBody.add(avgDoubleKillsPanel);
+                        leftSideBody.add(avgTripleKillsPanel);
+                        leftSideBody.add(avgQuadKillsPanel);
+                        leftSideBody.add(avgPentaKillsPanel);
                 leftSide.add(leftSideHeader);
                 leftSide.add(leftSideBody);
                 JPanel rightSide = new JPanel();
@@ -426,14 +488,30 @@ public class RankedStatsPage {
                             totalAssistsPanel.setOpaque(false);
                         JPanel totalMinionsPanel = new JPanel();
                             totalMinionsPanel.setOpaque(false);
+                        JPanel totalDoubleKillsPanel = new JPanel();
+                            totalDoubleKillsPanel.setOpaque(false);
+                        JPanel totalTripleKillsPanel = new JPanel();
+                            totalTripleKillsPanel.setOpaque(false);
+                        JPanel totalQuadKillsPanel = new JPanel();
+                            totalQuadKillsPanel.setOpaque(false);
+                        JPanel totalPentaKillsPanel = new JPanel();
+                            totalPentaKillsPanel.setOpaque(false);
                         totalJLabel(this.totalKillsLabel, "   Total Kills: ", Color.WHITE);
                         totalJLabel(this.totalKillsLabelValue, new DecimalFormat("#######").format(totalKills), valueOrange);
                         totalJLabel(this.totalDeathsLabel, "   Total Deaths: ", Color.WHITE);
                         totalJLabel(this.totalDeathsLabelValue, new DecimalFormat("#######").format(totalDeaths), valueOrange);
                         totalJLabel(this.totalAssistsLabel, "   Total Assists: ", Color.WHITE);
                         totalJLabel(this.totalAssistsLabelValue, new DecimalFormat("#######").format(totalAssists), valueOrange);
-                        totalJLabel(this.totalMinionsLabel, "   Total Minions Killed: ", Color.WHITE);
+                        totalJLabel(this.totalMinionsLabel, "   Total Minion Kills: ", Color.WHITE);
                         totalJLabel(this.totalMinionsLabelValue, new DecimalFormat("#######").format(totalMinions), valueOrange);
+                        totalJLabel(this.totalDoubleKillsLabel, "   Total Double Kills: ", Color.WHITE);
+                        totalJLabel(this.totalDoubleKillsLabelValue, new DecimalFormat("#######").format(totalDoubleKills), valueOrange);
+                        totalJLabel(this.totalTripleKillsLabel, "   Total Triple Kills: ", Color.WHITE);
+                        totalJLabel(this.totalTripleKillsLabelValue, new DecimalFormat("#######").format(totalTripleKills), valueOrange);
+                        totalJLabel(this.totalQuadKillsLabel, "   Total Quadra Kills: ", Color.WHITE);
+                        totalJLabel(this.totalQuadKillsLabelValue, new DecimalFormat("#######").format(totalQuadraKills), valueOrange);
+                        totalJLabel(this.totalPentaKillsLabel, "   Total Penta Kills: ", Color.WHITE);
+                        totalJLabel(this.totalPentaKillsLabelValue, new DecimalFormat("#######").format(totalPentaKills), valueOrange);
                         totalKillsPanel.add(totalKillsLabel);
                         totalKillsPanel.add(totalKillsLabelValue);
                         totalDeathsPanel.add(totalDeathsLabel);
@@ -442,10 +520,22 @@ public class RankedStatsPage {
                         totalAssistsPanel.add(totalAssistsLabelValue);
                         totalMinionsPanel.add(totalMinionsLabel);
                         totalMinionsPanel.add(totalMinionsLabelValue);
+                        totalDoubleKillsPanel.add(totalDoubleKillsLabel);
+                        totalDoubleKillsPanel.add(totalDoubleKillsLabelValue);
+                        totalTripleKillsPanel.add(totalTripleKillsLabel);
+                        totalTripleKillsPanel.add(totalTripleKillsLabelValue);
+                        totalQuadKillsPanel.add(totalQuadKillsLabel);
+                        totalQuadKillsPanel.add(totalQuadKillsLabelValue);
+                        totalPentaKillsPanel.add(totalPentaKillsLabel);
+                        totalPentaKillsPanel.add(totalPentaKillsLabelValue);
                         rightSideBody.add(totalKillsPanel);
                         rightSideBody.add(totalDeathsPanel);
                         rightSideBody.add(totalAssistsPanel);
                         rightSideBody.add(totalMinionsPanel);
+                        rightSideBody.add(totalDoubleKillsPanel);
+                        rightSideBody.add(totalTripleKillsPanel);
+                        rightSideBody.add(totalQuadKillsPanel);
+                        rightSideBody.add(totalPentaKillsPanel);
                     //rightSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
                 rightSide.add(rightSideHeader);
                 rightSide.add(rightSideBody);
@@ -510,10 +600,22 @@ public class RankedStatsPage {
                                 new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalDeathsPerSession")/(double)totalGamesInt));
                         avgMinionKillsLabelValue.setText(
                                 new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalMinionKills")/(double)totalGamesInt));
+                        avgDoubleKillsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalDoubleKills")/(double)totalGamesInt));
+                        avgTripleKillsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalTripleKills")/(double)totalGamesInt));
+                        avgQuadKillsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalQuadraKills")/(double)totalGamesInt));
+                        avgPentaKillsLabelValue.setText(
+                                new DecimalFormat("##.##").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalPentaKills")/(double)totalGamesInt));
                         totalKillsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalChampionKills")));
                         totalDeathsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalDeathsPerSession")));
                         totalAssistsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalAssists")));
                         totalMinionsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalMinionKills")));
+                        totalDoubleKillsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalDoubleKills")));
+                        totalTripleKillsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalTripleKills")));
+                        totalQuadKillsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalQuadraKills")));
+                        totalPentaKillsLabelValue.setText(new DecimalFormat("#######").format((double)objChampRankedList.get(position).getJSONObject("stats").getInt("totalPentaKills")));
                     } catch (JSONException ex) {
                         Logger.getLogger(RankedStatsPage.class.getName()).log(Level.SEVERE, null, ex);
                     }

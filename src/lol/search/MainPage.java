@@ -156,7 +156,7 @@ public class MainPage implements ActionListener{
     private void addSummonerLabel(JPanel panel){
         //summmoner label
         JLabel label1 = new JLabel("SUMMONER:");
-        label1.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 30)); //custom font
+        label1.setFont(new Font("Sen-Regular", Font.CENTER_BASELINE, 32)); //custom font
         label1.setForeground(Color.WHITE); //text color
         JPanel labelPanel = new JPanel();
         labelPanel.add(label1);
@@ -290,10 +290,10 @@ public class MainPage implements ActionListener{
                             getMostRecentVersion(regionCodeValue);
                             Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
                             if(objSummByName.getDoesExist()){
-                                //printValues();
-                                masterFrame.getContentPane().removeAll();
-                                RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(version, masterFrame, regionCodeValue, objSummByName);
-                            }
+                                    //printValues();
+                                    masterFrame.getContentPane().removeAll();
+                                    RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(version, masterFrame, regionCodeValue, objSummByName);
+                                }
                             else{
                                 errorLabel.setText("Player does not exist. Please try again.");
                             }

@@ -54,7 +54,7 @@ public class RankedStatsById {
             //parse responses
             this.rankedObjs = setRankedObjList(rankedJsonString);
             this.rankedChampKeyList = setRankedChampKeyList();
-            
+             
         } catch (MalformedURLException ex) {
             Logger.getLogger(RankedStatsById.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -88,7 +88,7 @@ public class RankedStatsById {
             }
         } catch (IOException ex) {
             Logger.getLogger(RankedStatsById.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         return jsonResponse;
     }
     
