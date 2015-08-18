@@ -8,7 +8,7 @@ import javax.swing.JFrame;
  * @author Oscar
  */
 public class GUIFrame {
-    private final String version = "2.0.0";
+    private final String version = "2.0.1";
     private final String applicationName = "League of Legends Summoner Search " + version; //title bar name of the application
     private final JFrame frame; //main frame of the application
     

@@ -35,6 +35,7 @@ public class RankedStatsById {
     //end values
     private ArrayList<JSONObject> rankedObjs = new ArrayList<>();
     private ArrayList<String> rankedChampKeyList = new ArrayList<>();
+    private boolean doesExist;
     
     public RankedStatsById(String version, long id, String region, String season){
         this.version = version;
@@ -86,24 +87,31 @@ public class RankedStatsById {
             while (null != (strTemp = br.readLine())) {
                     jsonResponse = strTemp;
             }
+            doesExist = true;
         } catch (IOException ex) {
-            Logger.getLogger(RankedStatsById.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error retrieving ranked information.");
+            doesExist = false;
         } 
         return jsonResponse;
     }
-    
+    public boolean doesExist(){
+        return this.doesExist;
+    }
     //get all champion objects from ranked response in an arraylist
     private ArrayList<JSONObject> setRankedObjList(String response){
         ArrayList<JSONObject> list = new ArrayList<>();
-        try {
-            JSONObject obj = new JSONObject(response);
-            JSONArray array = obj.getJSONArray("champions");
-            for(int i = 0; i < array.length(); i++){
-                list.add(array.getJSONObject(i));
+        if(doesExist == true){
+            try {
+                JSONObject obj = new JSONObject(response);
+                JSONArray array = obj.getJSONArray("champions");
+                for(int i = 0; i < array.length(); i++){
+                    list.add(array.getJSONObject(i));
+                }
+            } catch (JSONException ex) {
+                Logger.getLogger(RankedStatsById.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (JSONException ex) {
-            Logger.getLogger(RankedStatsById.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return list;
     }
     

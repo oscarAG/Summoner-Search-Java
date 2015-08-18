@@ -289,11 +289,18 @@ public class MainPage implements ActionListener{
                             ConvertToCountryCode(comboBoxValue); //convert it to country code ex. na, eu, ru, etc.
                             getMostRecentVersion(regionCodeValue);
                             Summoner_ByName objSummByName = new Summoner_ByName(nameInput, regionCodeValue, version); //get Summoner_ByName information from endpoint
+                            RankedStatsPage RANKED_STATS_PAGE_TEST = new RankedStatsPage(version, regionCodeValue, objSummByName);
+                            System.out.println("Player ranked status: " + RANKED_STATS_PAGE_TEST.isExist());
                             if(objSummByName.getDoesExist()){
+                                if(RANKED_STATS_PAGE_TEST.isExist()){
                                     //printValues();
                                     masterFrame.getContentPane().removeAll();
                                     RankedStatsPage RANKED_STATS_PAGE = new RankedStatsPage(version, masterFrame, regionCodeValue, objSummByName);
                                 }
+                                else{
+                                    errorLabel.setText("Ranked history for this player does not exist.");
+                                }  
+                            }
                             else{
                                 errorLabel.setText("Player does not exist. Please try again.");
                             }

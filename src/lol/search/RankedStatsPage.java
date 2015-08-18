@@ -58,8 +58,9 @@ public class RankedStatsPage {
     private final int losses;
     private final String winPercentage;
     //values for this class
+    private boolean doesExist;
     private final Dimension headerDimension = new Dimension(1200, 55);
-    private final JFrame masterFrame;
+    private JFrame masterFrame;
     private String season;
     private final ArrayList<JLabel> spacers = new ArrayList<>();
     private JLabel background;
@@ -117,7 +118,29 @@ public class RankedStatsPage {
     private final JLabel totalQuadKillsLabelValue = new JLabel();
     private final JLabel totalPentaKillsLabel = new JLabel();
     private final JLabel totalPentaKillsLabelValue = new JLabel();
-    
+    public RankedStatsPage(String version, String region, Summoner_ByName objSummByName){
+       this.OBJ_GAME_STATIC_DATA = new GameStaticData();
+        this.summonerName = objSummByName.getName();
+        this.summonerId = objSummByName.getSummonerId();
+        this.summonerLevel = objSummByName.getSummonerLevel();
+        this.version = version;
+        this.region = region;
+        this.profileIcon = objSummByName.getProfileIcon();
+        this.OBJ_ALL_CHAMPS_BY_ID = new AllChampionsById(this.region);
+        //call to other class for more info
+        this.OBJ_LEAGUE_BYID = new League_ById(this.region, this.summonerId);
+        this.tier = this.OBJ_LEAGUE_BYID.getTier();
+        this.division = this.OBJ_LEAGUE_BYID.getDivision();
+        this.wins = this.OBJ_LEAGUE_BYID.getWins();
+        this.losses = this.OBJ_LEAGUE_BYID.getLosses();
+        this.totalGamesInt = wins+losses;
+        setSeason("SEASON2015");
+        rankedStatsClassOperations(this.version, this.summonerId, this.region, this.season);
+        this.winPercentage = getWinPercentage(this.wins, this.losses);
+        sort(); //sorts the rankedJSONObject lists
+        setChampIdList();
+        setChampKeyList();
+    }
     public RankedStatsPage(String version, JFrame frame, String region, Summoner_ByName objSummByName){ //constructor
         this.OBJ_GAME_STATIC_DATA = new GameStaticData();
         this.summonerName = objSummByName.getName();
@@ -539,8 +562,8 @@ public class RankedStatsPage {
                     //rightSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
                 rightSide.add(rightSideHeader);
                 rightSide.add(rightSideBody);
-            totalsAndAverages.add(leftSide);
             totalsAndAverages.add(rightSide);
+            totalsAndAverages.add(leftSide);
         panel.add(statsPanelTotals);
         panel.add(totalsAndAverages);
         return panel;
@@ -695,7 +718,12 @@ public class RankedStatsPage {
     /*creates an object of the ranked stats by id class, and sets the necessary variables*/
     private void rankedStatsClassOperations(String version, long id, String region, String season){
         this.OBJ_RANKED_STATS_BY_ID = new RankedStatsById(version, id, region, season);
+        this.doesExist = this.OBJ_RANKED_STATS_BY_ID.doesExist();
         this.objChampRankedList = this.OBJ_RANKED_STATS_BY_ID.getObjChampRankedList(); //has the json objects of the champions ranked stats
+    }
+    
+    public boolean isExist(){
+        return this.doesExist;
     }
     
     private void setChampKeyList(){
