@@ -85,6 +85,7 @@ public class GameStaticData {
         } catch (ProtocolException ex) {
             Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            System.out.println(randomChampion);
             Logger.getLogger(GameStaticData.class.getName()).log(Level.SEVERE, null, ex);
         }
         return image;
