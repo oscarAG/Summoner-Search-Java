@@ -392,7 +392,7 @@ public class MainPage implements ActionListener{
             //create the font to use
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             //register the font
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("fonts\\Sen-Regular.ttf")));
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("assets\\fonts\\Sen-Regular.ttf")));
         }catch (IOException ex) {
             Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FontFormatException ex) {
