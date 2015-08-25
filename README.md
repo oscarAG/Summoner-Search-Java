@@ -1,5 +1,5 @@
-# League-of-Legends-Summoner-Search
-League of Legends Summoner Search is a Java desktop application that receives information about a player from the official Riot API.
+# Summoner-Search
+Summoner Search is a Java desktop application that receives information about a player from the official Riot API.
 When the application starts, just type in a League of Legends username, select the region that the player belongs to, and click search. 
 The application will return information regarding the player. The project uses my personal API Key to receive information. However, anyone
 using this project for their own use should use their own personal API key. A personal API key can be created by 
