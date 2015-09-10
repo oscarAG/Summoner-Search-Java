@@ -380,8 +380,8 @@ public class RankedStatsPage {
                         leftSideHeader.add(this.leftSideHeaderLabel);
                     JPanel leftSideBody = new JPanel();
                     leftSideBody.setOpaque(false);
-                    leftSideBody.setLayout(new BoxLayout(leftSideBody, BoxLayout.Y_AXIS));
-                    leftSideBody.setPreferredSize(new Dimension(455, 360));
+                    leftSideBody.setLayout(new FlowLayout(FlowLayout.LEFT));
+                    leftSideBody.setPreferredSize(new Dimension(250, 360));
                     //leftSideBody.setBorder(BorderFactory.createLineBorder(Color.RED));
                         JPanel avgKillsPanel = new JPanel();
                             avgKillsPanel.setOpaque(false);
@@ -501,8 +501,9 @@ public class RankedStatsPage {
                         rightSideHeader.add(this.rightSideHeaderLabel);
                     JPanel rightSideBody = new JPanel();
                     rightSideBody.setOpaque(false);
-                    rightSideBody.setLayout(new BoxLayout(rightSideBody, BoxLayout.Y_AXIS));
-                    rightSideBody.setPreferredSize(new Dimension(455, 360));
+                    rightSideBody.setLayout(new FlowLayout(FlowLayout.LEFT));
+                    rightSideBody.setPreferredSize(new Dimension(270, 360));
+                    //rightSideBody.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
                         JPanel totalKillsPanel = new JPanel();
                             totalKillsPanel.setOpaque(false);
                         JPanel totalDeathsPanel = new JPanel();
